@@ -1,4 +1,3 @@
-import React from "react";
 import { useGetFactoriesCategoriesQuery } from "../../apis/departments/queries";
 import LoadingPage from "../loading-page/LoadingPage";
 import {
