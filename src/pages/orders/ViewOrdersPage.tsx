@@ -24,6 +24,7 @@ const ViewOrdersPage = () => {
   const { data: ordersInfo, isError, isLoading } = useGetAllOrdersListQuery();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<OrderStatusEnum | "">("");
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
@@ -118,16 +119,64 @@ const ViewOrdersPage = () => {
                   </Stack>
                   <Stack direction={"row"} spacing={1}>
                     <Typography color={"primary"} sx={{ fontWeight: "bold" }}>
-                      {t("buyer_name")} :
+                      {t("seller_name")} :
                     </Typography>
-                    <Typography>{order.userId.username}</Typography>
+                    <Typography>{order.clientId.username}</Typography>
+                  </Stack>
+                  <Stack direction="row" spacing={1}>
+                    <Typography color="primary" sx={{ fontWeight: "bold" }}>
+                      {t("sub_total_to_seller")}:
+                    </Typography>
+                    <Typography>
+                      {order?.subTotal?.toLocaleString?.("en-US", {
+                        style: "currency",
+                        currency: "AED",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })}
+                    </Typography>
+                  </Stack>
+                  <Stack direction="row" spacing={1}>
+                    <Typography color="primary" sx={{ fontWeight: "bold" }}>
+                      {t("service_fee")} :
+                    </Typography>
+                    <Typography>
+                      {order?.serviceFee?.toLocaleString?.("en-US", {
+                        style: "currency",
+                        currency: "AED",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })}
+                    </Typography>
                   </Stack>
 
-                  <Stack direction={"row"} spacing={1}>
-                    <Typography color={"primary"} sx={{ fontWeight: "bold" }}>
-                      {t("shipping_address")} :
+                  <Stack direction="row" spacing={1}>
+                    <Typography color="primary" sx={{ fontWeight: "bold" }}>
+                      {t("delivery_fee")} :
                     </Typography>
-                    <Typography>{order.shippingAddress}</Typography>
+                    <Typography>
+                      {(
+                        order.grandTotal - (order.subTotal ?? 0)
+                      ).toLocaleString?.("en-US", {
+                        style: "currency",
+                        currency: "AED",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })}
+                    </Typography>
+                  </Stack>
+                  <Stack direction="row" spacing={1}>
+                    <Typography color="primary" sx={{ fontWeight: "bold" }}>
+                      {t("grand_total_without_serviceFee")}:
+                    </Typography>
+                    <Typography>
+                      {order?.grandTotal?.toLocaleString?.("en-US", {
+                        style: "currency",
+                        currency: "AED",
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })}
+                    </Typography>
                   </Stack>
                   <Stack direction={"row"} spacing={1}>
                     <Typography color={"primary"} sx={{ fontWeight: "bold" }}>

@@ -12,9 +12,14 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import { CarType } from "../apis/vehicle/type";
+import LockPersonIcon from "@mui/icons-material/LockPerson";
 
 const NAV_LINKS = [
-  { name: "categories", href: "/categories", icon: CategoryIcon },
+  {
+    name: "categories",
+    href: "/categories",
+    icon: CategoryIcon,
+  },
   { name: "departments", href: "/departments", icon: LayersIcon },
   { name: "users", href: "/users", icon: GroupIcon },
   { name: "services", href: "/services", icon: HomeRepairServiceIcon },
@@ -28,7 +33,12 @@ const NAV_LINKS = [
     icon: NotificationsRoundedIcon,
   },
   { name: "view-orders", href: "/view-orders", icon: StorefrontIcon },
-  { name: "orders", href: "/orders", icon: StoreRoundedIcon },
+  {
+    name: "orders",
+    href: "/orders",
+    icon: StoreRoundedIcon,
+    subIcon: LockPersonIcon,
+  },
   { name: "sliders", href: "/sliders", icon: WebStoriesIcon },
   { name: "settings", href: "/settings", icon: SettingsRoundedIcon },
 ];

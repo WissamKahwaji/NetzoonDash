@@ -245,6 +245,9 @@ const AddEditAdsPage = () => {
                     touched.advertisingYear && Boolean(errors.advertisingYear)
                   }
                   helperText={touched.advertisingYear && errors.advertisingYear}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                   sx={{ mb: 2 }}
                 />
               </Grid>

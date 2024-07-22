@@ -127,12 +127,26 @@ const SideBar = ({ open }: IProps) => {
                         >
                           <navLink.icon />
                         </ListItemIcon>
+
                         {open && (
                           <ListItemText>
                             <Typography sx={{ color: "white" }}>
                               {t(navLink.name)}
                             </Typography>
                           </ListItemText>
+                        )}
+                        {navLink.subIcon && (
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 0,
+                              mr: 2,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: "white",
+                            }}
+                          >
+                            <navLink.subIcon />
+                          </ListItemIcon>
                         )}
                       </ListItemButton>
                     </ListItem>
