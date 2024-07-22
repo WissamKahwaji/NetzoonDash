@@ -17,16 +17,16 @@ const useGetUserByIdQuery = (userId: string) =>
     queryFn: () => getUserByIdInfo(userId),
   });
 
-const useGetAllUsersQuery = () =>
+const useGetAllUsersQuery = (country: string) =>
   useQuery({
     queryKey: ["get-all-users"],
-    queryFn: () => getAllUsersInfo(),
+    queryFn: () => getAllUsersInfo(country),
   });
 
-const useGetUsersByTypeQuery = (userType: string) =>
+const useGetUsersByTypeQuery = (userType: string, country: string) =>
   useQuery({
     queryKey: ["get-users-by-type"],
-    queryFn: () => getUsersByTypeInfo(userType),
+    queryFn: () => getUsersByTypeInfo(userType, country),
   });
 
 const useAddUserMutation = () => {

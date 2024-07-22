@@ -9,9 +9,11 @@ import {
 } from "../../apis/services/queries";
 
 import LoadingButton from "../../components/items/buttons/loadingButtons/LoadingButton";
+import { useTranslation } from "react-i18next";
 
 const AddEditServiceCategory = () => {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
 
   const { data: categoryInfo } = useGetServiceCategoryByIdQuery(id ?? "");
 
@@ -20,7 +22,8 @@ const AddEditServiceCategory = () => {
 
   const initialValues: ServiceCategoryModel = {
     ...(id && { _id: id }),
-    title: categoryInfo?.title ?? "",
+    title: categoryInfo?.title || "",
+    titleAr: categoryInfo?.titleAr || "",
   };
   const handleSubmit = async (
     values: ServiceCategoryModel,
@@ -50,7 +53,7 @@ const AddEditServiceCategory = () => {
           mb: 6,
         }}
       >
-        {id ? `Edit ${categoryInfo?.title}` : `Add Category`}
+        {id ? `${t("edit")} ${categoryInfo?.title}` : `${t("add_category")}`}
       </Typography>
 
       <Formik
@@ -65,17 +68,29 @@ const AddEditServiceCategory = () => {
                 <TextField
                   name="title"
                   fullWidth
-                  label="Category title"
+                  label={t("category_title")}
                   error={touched.title && !!errors.title}
                   onChange={handleChange}
-                  value={values.title}
+                  value={values.title || ""}
+                  sx={{ direction: "ltr" }}
+                />
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  name="titleAr"
+                  fullWidth
+                  label={t("category_title_ar")}
+                  error={touched.titleAr && !!errors.titleAr}
+                  onChange={handleChange}
+                  value={values.titleAr || ""}
+                  sx={{ direction: "rtl" }}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Stack justifyContent={"center"}>
                   <LoadingButton
                     isSubmitting={isSubmitting}
-                    buttonText={"submit"}
+                    buttonText={t("submit")}
                   />
                 </Stack>
               </Grid>

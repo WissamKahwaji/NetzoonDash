@@ -3,8 +3,10 @@ import { createFormData } from "../../utils";
 import publicInstance from "../publicInstance";
 import { AdsInputModel, AdsModel, AdsReponseMode } from "./type";
 
-const getAdsList = async () => {
-  const res = await publicInstance.get<AdsReponseMode>(API_ROUTES.ADS.GET_ALL);
+const getAdsList = async (country: string) => {
+  const res = await publicInstance.get<AdsReponseMode>(
+    API_ROUTES.ADS.GET_ALL(country)
+  );
   return res.data;
 };
 

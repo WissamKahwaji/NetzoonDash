@@ -5,6 +5,7 @@ import {
   editVehicle,
   getAllCars,
   getAllPlans,
+  getAllShips,
   getVehicleById,
 } from ".";
 import { toast } from "react-toastify";
@@ -15,6 +16,13 @@ const useGetAllCarsQuery = (country: string, enabled?: boolean | undefined) =>
   useQuery({
     queryKey: ["get-all-cars"],
     queryFn: () => getAllCars(country),
+    enabled: enabled,
+  });
+
+const useGetAllShipsQuery = (country: string, enabled?: boolean | undefined) =>
+  useQuery({
+    queryKey: ["get-all-ships"],
+    queryFn: () => getAllShips(country),
     enabled: enabled,
   });
 
@@ -29,6 +37,7 @@ const useGetVehicleByIdQuery = (id: string) =>
   useQuery({
     queryKey: ["get-vehicle-by-id"],
     queryFn: () => getVehicleById(id),
+    enabled: !!id,
   });
 const useAddVehicleMutation = () => {
   const navigate = useNavigate();
@@ -80,6 +89,7 @@ const useDeleteVehicleMutation = () => {
 export {
   useGetAllPlansQuery,
   useGetAllCarsQuery,
+  useGetAllShipsQuery,
   useGetVehicleByIdQuery,
   useDeleteVehicleMutation,
   useEditVehicleMutation,

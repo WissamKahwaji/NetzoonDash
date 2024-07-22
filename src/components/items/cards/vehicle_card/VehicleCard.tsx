@@ -8,16 +8,16 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { Delete, Edit } from "@mui/icons-material";
 import { VehicleModel } from "../../../../apis/vehicle/type";
 import DeleteVehicleDialog from "../../dialogs/delete_vehicle_dialog";
+import { Link } from "react-router-dom";
 interface VehicleCardProps {
   vehicle: VehicleModel;
 }
 
 const VehicleCard = ({ vehicle: vehicle }: VehicleCardProps) => {
-  const navigate = useNavigate();
   const [openDeleteVehicleDialog, setOpenDeleteVehicleDialog] =
     useState<boolean>(false);
 
@@ -50,14 +50,11 @@ const VehicleCard = ({ vehicle: vehicle }: VehicleCardProps) => {
               alignItems: "center",
             }}
           >
-            <IconButton
-              color="primary"
-              onClick={() => {
-                navigate(`${vehicle._id}/edit`);
-              }}
-            >
-              <Edit />
-            </IconButton>
+            <Link to={`${vehicle._id}/edit`} reloadDocument>
+              <IconButton color="primary">
+                <Edit />
+              </IconButton>
+            </Link>
             <IconButton color="error" onClick={handleOpenDeleteVehicleDialog}>
               <Delete />
             </IconButton>

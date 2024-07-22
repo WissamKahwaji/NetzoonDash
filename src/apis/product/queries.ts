@@ -10,10 +10,10 @@ import { useNavigate } from "react-router-dom";
 import { ProductModel } from "./type";
 import { toast } from "react-toastify";
 
-const useGetProductsByCategoryQuery = (categoryId: string) =>
+const useGetProductsByCategoryQuery = (categoryId: string, country: string) =>
   useQuery({
     queryKey: ["get-products-by-category"],
-    queryFn: () => getProductsByCategory(categoryId),
+    queryFn: () => getProductsByCategory(categoryId, country),
   });
 const useGetProductByIdQuery = (productId: string) =>
   useQuery({
@@ -33,7 +33,7 @@ const useAddProductMutation = (
       addProduct(payload, departmentName, categoryName),
     onSuccess(_data, variable) {
       toast.success(`add ${variable.name} successfully.`);
-      navigate(-1);
+      navigate(-2);
     },
     onError(_data, variable) {
       toast.error(`failed to add ${variable.name}`);

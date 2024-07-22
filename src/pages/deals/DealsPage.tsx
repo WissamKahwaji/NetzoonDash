@@ -1,11 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useGetDealsCategoriesQuery } from "../../apis/deals/queiries";
 import LoadingPage from "../loading-page/LoadingPage";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import DealsCategoriesCard from "../../components/items/cards/deal_category_card";
+import { useTranslation } from "react-i18next";
 
 const DealsPage = () => {
-  const navigate = useNavigate();
+  const { t } = useTranslation();
   const {
     data: dealsCategories,
     isError,
@@ -27,21 +28,23 @@ const DealsPage = () => {
           color: "black",
         }}
       >
-        Deals Categories
+        {t("deals_categories")}
       </Typography>
       <Box sx={{ display: "flex", justifyContent: "end" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{
-            height: "fit-content",
-          }}
-          onClick={() => {
-            navigate(`add`);
-          }}
-        >
-          Add deal category
-        </Button>
+        <Link to={`add`} reloadDocument>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              height: "fit-content",
+            }}
+            // onClick={() => {
+            //   navigate(`add`);
+            // }}
+          >
+            {t("add_deal_category")}
+          </Button>
+        </Link>
       </Box>
       <Grid container gap={4}>
         {dealsCategories &&
@@ -52,6 +55,7 @@ const DealsPage = () => {
                   key={index}
                   categoryId={category._id ?? ""}
                   name={category.name}
+                  nameAr={category.nameAr ?? category.name}
                 />
               </Box>
             </Grid>

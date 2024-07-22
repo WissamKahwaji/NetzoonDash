@@ -1,22 +1,35 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import LoadingPage from "../loading-page/LoadingPage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { advertisingType } from "../../apis/ads/type";
 import { Box, Button, Grid, MenuItem, Select, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useGetAdsListQuery } from "../../apis/ads/queries";
 import AdsCard from "../../components/items/cards/ads_card";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
 
 const AdsListPage = () => {
-  const { data: adsInfo, isError, isLoading } = useGetAdsListQuery();
+  const { country } = useCountry();
+  const { t } = useTranslation();
+  const {
+    data: adsInfo,
+    isError,
+    isLoading,
+    refetch,
+  } = useGetAdsListQuery(country);
   const [filterType, setFilterType] = useState<advertisingType | "">("");
-  const navigate = useNavigate();
+
   const filteredAds =
     adsInfo?.results &&
     adsInfo?.results.filter(ads =>
       filterType ? ads.advertisingType === filterType : true
     );
+
+  useEffect(() => {
+    refetch();
+  }, [country, refetch]);
   if (isError) return <div>Error !!!</div>;
   if (isLoading) return <LoadingPage />;
 
@@ -32,7 +45,7 @@ const AdsListPage = () => {
           mb: 3,
         }}
       >
-        Ads
+        {t("ads")}
       </Typography>
 
       <Box
@@ -44,18 +57,17 @@ const AdsListPage = () => {
           width: "100%",
         }}
       >
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{
-            height: "fit-content",
-          }}
-          onClick={() => {
-            navigate(`owner`);
-          }}
-        >
-          Add ads
-        </Button>
+        <Link to={`owner`}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              height: "fit-content",
+            }}
+          >
+            {t("add_ads")}
+          </Button>
+        </Link>
 
         <Box sx={{ marginRight: "8px", marginBottom: "10px" }}>
           <Select
@@ -65,19 +77,21 @@ const AdsListPage = () => {
             inputProps={{ "aria-label": "Select ads type" }}
             IconComponent={ExpandMoreIcon}
           >
-            <MenuItem value={""}>ALL</MenuItem>
-            <MenuItem value={advertisingType.PRODUCT}>PRODUCT</MenuItem>
-            <MenuItem value={advertisingType.CAR}>CAR</MenuItem>
-            <MenuItem value={advertisingType.PLANES}>PLANES</MenuItem>
+            <MenuItem value={""}>{t("all")}</MenuItem>
+            <MenuItem value={advertisingType.PRODUCT}>{t("product")}</MenuItem>
+            <MenuItem value={advertisingType.CAR}>{t("car")}</MenuItem>
+            <MenuItem value={advertisingType.PLANES}>{t("planes")}</MenuItem>
             <MenuItem value={advertisingType.SEA_COMPANIES}>
-              SEA_COMPANIES
+              {t("ships")}
             </MenuItem>
-            <MenuItem value={advertisingType.REAL_ESTATE}>REAL_ESTATE</MenuItem>
-            <MenuItem value={advertisingType.SERVICE}>SERVICE</MenuItem>
+            <MenuItem value={advertisingType.REAL_ESTATE}>
+              {t("real_estate")}
+            </MenuItem>
+            <MenuItem value={advertisingType.SERVICE}>{t("service")}</MenuItem>
             <MenuItem value={advertisingType.DELIVERY_SERVICE}>
-              DELIVERY_SERVICE
+              {t("delivery_service")}
             </MenuItem>
-            <MenuItem value={advertisingType.USER}>USER</MenuItem>
+            <MenuItem value={advertisingType.USER}>{t("user")}</MenuItem>
           </Select>
         </Box>
       </Box>

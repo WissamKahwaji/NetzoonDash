@@ -18,8 +18,10 @@ import { Drawer, DrawerHeader, LinkSx } from "../style";
 import IProps from "./type";
 
 import { NAV_LINKS } from "../../constants";
+import { useTranslation } from "react-i18next";
 
 const SideBar = ({ open }: IProps) => {
+  const { t } = useTranslation();
   const [isScrolling, setIsScrolling] = useState(false);
   const { pathname } = useLocation();
 
@@ -128,7 +130,7 @@ const SideBar = ({ open }: IProps) => {
                         {open && (
                           <ListItemText>
                             <Typography sx={{ color: "white" }}>
-                              {navLink.name}
+                              {t(navLink.name)}
                             </Typography>
                           </ListItemText>
                         )}

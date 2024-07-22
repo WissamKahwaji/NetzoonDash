@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { ProductModel } from "../../../../apis/product/type";
 import { Delete, Edit } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import DeleteProductDialog from "../../dialogs/delete_product_dialog/DeleteProductDialog";
 import { useState } from "react";
 
@@ -18,7 +18,6 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const navigate = useNavigate();
   const [openDeleteProductDialog, setOpenDeleteProductDialog] =
     useState<boolean>(false);
 
@@ -51,33 +50,28 @@ const ProductCard = ({ product }: ProductCardProps) => {
               alignItems: "center",
             }}
           >
-            <IconButton
-              color="primary"
-              onClick={() => {
-                navigate(`${product._id}/edit`);
-              }}
-            >
-              <Edit />
-            </IconButton>
+            <Link to={`${product._id}/edit`} reloadDocument>
+              <IconButton color="primary">
+                <Edit />
+              </IconButton>
+            </Link>
             <IconButton color="error" onClick={handleOpenDeleteProductDialog}>
               <Delete />
             </IconButton>
           </Box>
         }
       />
-      <CardActionArea
-        onClick={() => {
-          navigate(`${product._id}/edit`);
-        }}
-      >
-        <CardMedia
-          component={"img"}
-          sx={{ objectFit: "contain" }}
-          src={product.imageUrl}
-          height="240px"
-          crossOrigin="anonymous"
-        />
-      </CardActionArea>
+      <Link to={`${product._id}/edit`} reloadDocument>
+        <CardActionArea>
+          <CardMedia
+            component={"img"}
+            sx={{ objectFit: "contain" }}
+            src={product.imageUrl}
+            height="240px"
+            crossOrigin="anonymous"
+          />
+        </CardActionArea>
+      </Link>
 
       <DeleteProductDialog
         open={openDeleteProductDialog}

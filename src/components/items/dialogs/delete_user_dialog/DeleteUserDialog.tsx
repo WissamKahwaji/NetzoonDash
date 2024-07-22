@@ -12,6 +12,7 @@ import React from "react";
 import { TransitionProps } from "@mui/material/transitions";
 import { DeleteUserDialogProps } from "./type";
 import { useDeleteUserAccountMutation } from "../../../../apis/users/queries";
+import { useTranslation } from "react-i18next";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -22,6 +23,7 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="down" ref={ref} {...props} />;
 });
 const DeleteUserDialog = ({ open, onClose, user }: DeleteUserDialogProps) => {
+  const { t } = useTranslation();
   const { mutate: deleteUserAccount } = useDeleteUserAccountMutation();
   const handleDeleteUser = () => {
     deleteUserAccount(user.id);
@@ -30,12 +32,14 @@ const DeleteUserDialog = ({ open, onClose, user }: DeleteUserDialogProps) => {
   return (
     <Dialog open={open} onClose={onClose} TransitionComponent={Transition}>
       <DialogContent>
-        <DialogContentText>{`are you sure you want to delete ${user.name}`}</DialogContentText>
+        <DialogContentText>{`${t("are_you_sure_you_want_to_delete")} ${
+          user.name
+        }`}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>cancel</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
         <Button variant="contained" onClick={handleDeleteUser}>
-          delete
+          {t("delete")}
         </Button>
       </DialogActions>
     </Dialog>

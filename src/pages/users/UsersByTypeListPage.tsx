@@ -1,20 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetUsersByTypeQuery } from "../../apis/users/queries";
 import LoadingPage from "../loading-page/LoadingPage";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import UserCard from "../../components/items/cards/users/UserCard";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
 
 const UsersByTypeListPage = () => {
   const { userType } = useParams<{ userType: string }>();
+  const { t } = useTranslation();
+  const { country } = useCountry();
   const {
     data: usersInfo,
     isError,
     isLoading,
-  } = useGetUsersByTypeQuery(userType ?? "");
+    refetch,
+  } = useGetUsersByTypeQuery(userType ?? "", country);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-
+  useEffect(() => {
+    refetch();
+  }, [country, refetch]);
   if (isError) return <div>Error !!!</div>;
   if (isLoading) return <LoadingPage />;
 
@@ -38,7 +45,7 @@ const UsersByTypeListPage = () => {
           color: "black",
         }}
       >
-        {userType} Users
+        {`${t(userType!)}`}
       </Typography>
       <Box sx={{ display: "flex", justifyContent: "end" }}>
         <Button
@@ -51,12 +58,12 @@ const UsersByTypeListPage = () => {
             navigate(`/users/add-user/${userType}`);
           }}
         >
-          Add
+          {t("add")}
         </Button>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
         <TextField
-          label="Search Users"
+          label={t("search")}
           variant="outlined"
           value={searchTerm}
           onChange={handleSearchChange}

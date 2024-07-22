@@ -29,6 +29,7 @@ import ServicesListPage from "./pages/services-page/ServicesListPage";
 import AddEditServicePage from "./pages/services-page/AddEditServicePage";
 import AdsListPage from "./pages/advertising/AdsListPage";
 import AddEditAdsPage from "./pages/advertising/AddEditAdsPage";
+import AdsRevenuesPage from "./pages/advertising/AdsRevenuesPage";
 import NewsListPage from "./pages/news-pages/NewsListPage";
 import AddEditNewsPage from "./pages/news-pages/AddEditNewsPage";
 import NotificationListPage from "./pages/notification/NotificationListPage";
@@ -37,6 +38,25 @@ import AddEditVehiclePage from "./pages/vehicle-page/AddEditVehiclePage";
 import DealsPage from "./pages/deals/DealsPage";
 import AddEditDealCategoryPage from "./pages/deals/AddEditDealCategoryPage";
 import DealsListPage from "./pages/deals/DealsListPage";
+import AddEditDealPage from "./pages/deals/AddEditDealPage";
+import SlidersPage from "./pages/sliders/SlidersPage";
+import EditSlidersPage from "./pages/sliders/EditSlidersPage";
+import SettingsPage from "./pages/settings-page/SettingsPage";
+import OpinionsPage from "./pages/settings-page/OpinionsPage";
+import ComplaintsPage from "./pages/settings-page/ComplaintsPage";
+
+import QuestionsPage from "./pages/settings-page/QuestionsPage";
+import RequestsPage from "./pages/settings-page/RequestsPage";
+import OrderListPage from "./pages/orders/OrderListPage";
+import OrderDetailsPage from "./pages/orders/OrderDetailsPage";
+import TrackOrderPage from "./pages/orders/TrackOrderPage";
+import ContactsPage from "./pages/settings-page/ContactsPage";
+import PrivacyPolicyPage from "./pages/settings-page/PrivacyPolicyPage";
+import TermsOfUsePage from "./pages/settings-page/TermsOfUsePage";
+import EditPrivacyPage from "./pages/settings-page/EditPrivacyPage";
+import EditTermsPage from "./pages/settings-page/EditTermsPage";
+import ViewOrdersPage from "./pages/orders/ViewOrdersPage";
+import FeesPage from "./pages/settings-page/FeesPage";
 
 const Routes = () => {
   const routes = createBrowserRouter(
@@ -48,6 +68,7 @@ const Routes = () => {
         >
           <Route index element={<Navigate to={"/categories"} />} />
           <Route path="departments" element={<DepartmentsPage />} />
+
           <Route path="categories" element={<CategoriesPage />} />
           <Route
             path="categories/facroties-categories"
@@ -58,8 +79,16 @@ const Routes = () => {
             element={<FactoryUsersPage />}
           />
           <Route
+            path="categories/facroties-categories/add-user/:userType/:title"
+            element={<AddUserPage />}
+          />
+          <Route
             path="departments/:departmentId"
             element={<DepartmentCategoriesPage />}
+          />
+          <Route
+            path="departments/:departmentId/add"
+            element={<DepartmentCategoryDetailsPage />}
           />
           <Route
             path="category/:categoryId"
@@ -128,11 +157,59 @@ const Routes = () => {
           <Route path="vehicles/:id/edit" element={<AddEditVehiclePage />} />
 
           <Route path="deals" element={<DealsPage />} />
+          <Route
+            path="deals/category/:categoryId/owner"
+            element={<ChooseOwnerPage />}
+          />
+          <Route
+            path="deals/category/:categoryId/owner/:ownerId/add"
+            element={<AddEditDealPage />}
+          />
+          <Route
+            path="deals/category/:categoryId/:id/edit"
+            element={<AddEditDealPage />}
+          />
           <Route path="deals/add" element={<AddEditDealCategoryPage />} />
           <Route path="deals/:id/edit" element={<AddEditDealCategoryPage />} />
           <Route
             path="deals/category/:categoryId"
             element={<DealsListPage />}
+          />
+
+          <Route path="sliders" element={<SlidersPage />} />
+          <Route path="sliders/:sliderId/edit" element={<EditSlidersPage />} />
+
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="settings/contacts" element={<ContactsPage />} />
+          <Route
+            path="settings/privacy-policy"
+            element={<PrivacyPolicyPage />}
+          />
+          <Route
+            path="settings/privacy-policy/edit"
+            element={<EditPrivacyPage />}
+          />
+          <Route path="settings/termsofuse" element={<TermsOfUsePage />} />
+          <Route path="settings/fees" element={<FeesPage />} />
+          <Route path="settings/termsofuse/edit" element={<EditTermsPage />} />
+          <Route path="settings/contacts/opinions" element={<OpinionsPage />} />
+          <Route
+            path="settings/contacts/complaints"
+            element={<ComplaintsPage />}
+          />
+          <Route path="settings/contacts/requests" element={<RequestsPage />} />
+          <Route
+            path="settings/contacts/questions"
+            element={<QuestionsPage />}
+          />
+          <Route path="settings/ads-revenues" element={<AdsRevenuesPage />} />
+
+          <Route path="orders" element={<OrderListPage />} />
+          <Route path="view-orders" element={<ViewOrdersPage />} />
+          <Route path="orders/:id" element={<OrderDetailsPage />} />
+          <Route
+            path="orders/:id/track-order/:pickupId"
+            element={<TrackOrderPage />}
           />
 
           <Route path="notifications" element={<NotificationListPage />} />

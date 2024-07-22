@@ -1,11 +1,13 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useGetAllCategoriesByDepartmentQuery } from "../../apis/departments/queries";
 import { Params } from "./type";
 import LoadingPage from "../loading-page/LoadingPage";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import DepartmentCategoryCard from "../../components/items/cards/department_category_card";
+import { useTranslation } from "react-i18next";
 
 const DepartmentCategoriesPage = () => {
+  const { t } = useTranslation();
   const { departmentId } = useParams<Params>();
   const {
     data: categoriesInfo,
@@ -28,8 +30,21 @@ const DepartmentCategoriesPage = () => {
           color: "black",
         }}
       >
-        {`Categories for (${categoriesInfo![0].department.name})`}
+        {`${t("categories_for")} (${categoriesInfo![0].department.name})`}
       </Typography>
+      <Box sx={{ display: "flex", justifyContent: "end" }}>
+        <Link to={`add`} reloadDocument>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              height: "fit-content",
+            }}
+          >
+            {`${t("add_category_in")} ${categoriesInfo![0].department.name}`}
+          </Button>
+        </Link>
+      </Box>
       <Grid container gap={4}>
         {categoriesInfo &&
           categoriesInfo.map((category, index) => (
@@ -40,6 +55,7 @@ const DepartmentCategoriesPage = () => {
                   categoryId={category._id}
                   name={category.name}
                   imageUrl={category.imageUrl}
+                  nameAr={category.nameAr ?? category.name}
                 />
               </Box>
             </Grid>

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  addDepartmentCategory,
   deleteDepartmentCategory,
   editDepartmentCategory,
   getAllCategoriesByDepartmentInfo,
@@ -28,7 +29,29 @@ const useGetCategoryByIdQuery = (categoryId: string) =>
   useQuery({
     queryKey: ["get-category-by-id"],
     queryFn: () => getCategoryByIdInfo(categoryId),
+    enabled: !!categoryId,
   });
+
+const useAddDepartmentCategoryMutation = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["add-department-category"],
+    mutationFn: (payload: EditDepartmentCategoryParams) =>
+      addDepartmentCategory(payload),
+    onSuccess() {
+      toast.success(`added  successfully.`);
+      queryClient.invalidateQueries({
+        queryKey: ["get-all-categories-by-department"],
+      });
+      navigate(-1);
+    },
+    onError() {
+      toast.error(`failed to add `);
+    },
+  });
+};
+
 const useEditDepartmentCategoryMutation = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -84,6 +107,7 @@ export {
   useGetAllCategoriesByDepartmentQuery,
   useGetCategoryByIdQuery,
   useEditDepartmentCategoryMutation,
+  useAddDepartmentCategoryMutation,
   useDeleteDepartmentCategoryMutation,
   useGetFactoriesCategoriesQuery,
   useGetFactoryUsersQuery,

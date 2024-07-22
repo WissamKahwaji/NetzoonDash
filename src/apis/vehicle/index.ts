@@ -11,6 +11,14 @@ const getAllCars = async (country: string) => {
   return res.data.results;
 };
 
+const getAllShips = async (country: string) => {
+  const res = await publicInstance.get<{
+    message: string;
+    results: VehicleModel[];
+  }>(API_ROUTES.VEHICLE.GET_ALL_SHIPS(country));
+  return res.data.results;
+};
+
 const getAllPlans = async (country: string) => {
   const res = await publicInstance.get<{
     message: string;
@@ -47,6 +55,7 @@ const deleteVehicle = async (id: string) => {
 export {
   getAllCars,
   getAllPlans,
+  getAllShips,
   getVehicleById,
   deleteVehicle,
   addVehicle,

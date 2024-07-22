@@ -7,21 +7,29 @@ import { Box, Button, Grid, Typography } from "@mui/material";
 import { useGetCategoryByIdQuery } from "../../apis/departments/queries";
 
 import ProductCard from "../../components/items/cards/product_card/ProductCard";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
+import { useEffect } from "react";
 
 const ProductList = () => {
+  const { t } = useTranslation();
+  const { country } = useCountry();
   const { categoryId } = useParams<Params>();
   const {
     data: productsInfo,
     isError,
     isLoading,
-  } = useGetProductsByCategoryQuery(categoryId ?? "");
+    refetch,
+  } = useGetProductsByCategoryQuery(categoryId ?? "", country);
   const {
     data: categoryInfo,
     isError: isErrorCategory,
     isLoading: isLoadingCategory,
   } = useGetCategoryByIdQuery(categoryId ?? "");
   const navigate = useNavigate();
-
+  useEffect(() => {
+    refetch();
+  }, [country, refetch]);
   if (isError || isErrorCategory) return <div>Error !!!</div>;
   if (isLoading || isLoadingCategory) return <LoadingPage />;
 
@@ -38,7 +46,7 @@ const ProductList = () => {
             navigate(`owner`);
           }}
         >
-          Add Product in {categoryInfo?.name}
+          {`${t("add_product_in")} ${categoryInfo?.name}`}
         </Button>
       </Box>
       <Grid container gap={4}>

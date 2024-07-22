@@ -3,9 +3,9 @@ import { createFormData } from "../../utils";
 import publicInstance from "../publicInstance";
 import { ProductModel } from "./type";
 
-const getProductsByCategory = async (categoryId: string) => {
+const getProductsByCategory = async (categoryId: string, country: string) => {
   const res = await publicInstance.get<ProductModel[]>(
-    API_ROUTES.PRODUCT.GET_BY_CATEGORY(categoryId)
+    API_ROUTES.PRODUCT.GET_BY_CATEGORY(categoryId, country)
   );
   return res.data;
 };

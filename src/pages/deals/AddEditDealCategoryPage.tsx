@@ -8,8 +8,10 @@ import { DealsCategoryModel } from "../../apis/deals/type";
 import { Form, Formik, FormikHelpers } from "formik";
 import { Box, Grid, Stack, TextField, Typography } from "@mui/material";
 import LoadingButton from "../../components/items/buttons/loadingButtons/LoadingButton";
+import { useTranslation } from "react-i18next";
 
 const AddEditDealCategoryPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
 
   const { data: categoryInfo } = useGetDealCategoryByIdQuery(id ?? "");
@@ -19,7 +21,8 @@ const AddEditDealCategoryPage = () => {
 
   const initialValues: DealsCategoryModel = {
     ...(id && { _id: id }),
-    name: categoryInfo?.name ?? "",
+    name: categoryInfo?.name || "",
+    nameAr: categoryInfo?.nameAr || "",
   };
   const handleSubmit = async (
     values: DealsCategoryModel,
@@ -49,7 +52,7 @@ const AddEditDealCategoryPage = () => {
           mb: 6,
         }}
       >
-        {id ? `Edit ${categoryInfo?.name}` : `Add Category`}
+        {id ? `${t("edit")} ${categoryInfo?.name}` : `${t("add_category")}`}
       </Typography>
       <Formik
         initialValues={initialValues}
@@ -63,17 +66,29 @@ const AddEditDealCategoryPage = () => {
                 <TextField
                   name="name"
                   fullWidth
-                  label="Category name"
+                  label={t("category_name")}
                   error={touched.name && !!errors.name}
                   onChange={handleChange}
                   value={values.name}
+                  sx={{ direction: "ltr" }}
+                />
+              </Grid>
+              <Grid item xs={12} md={5}>
+                <TextField
+                  name="nameAr"
+                  fullWidth
+                  label={t("category_name_ar")}
+                  error={touched.nameAr && !!errors.nameAr}
+                  onChange={handleChange}
+                  value={values.nameAr}
+                  sx={{ direction: "rtl" }}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Stack justifyContent={"center"}>
                   <LoadingButton
                     isSubmitting={isSubmitting}
-                    buttonText={"submit"}
+                    buttonText={t("submit")}
                   />
                 </Stack>
               </Grid>

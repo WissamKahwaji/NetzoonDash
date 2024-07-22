@@ -4,10 +4,11 @@ import { useGetFactoryUsersQuery } from "../../apis/departments/queries";
 import LoadingPage from "../loading-page/LoadingPage";
 import { Box, Grid, TextField, Typography, Button } from "@mui/material";
 import UserCard from "../../components/items/cards/users/UserCard";
+import { useTranslation } from "react-i18next";
 
 const FactoryUsersPage = () => {
   const { id } = useParams<{ id: string }>();
-
+  const { t } = useTranslation();
   const {
     data: factoryUsers,
     isError,
@@ -24,7 +25,9 @@ const FactoryUsersPage = () => {
   };
 
   const handleAddUser = () => {
-    navigate(`/users/add-user/factory`);
+    navigate(
+      `/categories/facroties-categories/add-user/factory/${factoryUsers?.title}`
+    );
   };
 
   const filteredUsers = factoryUsers?.factory.filter(user =>
@@ -35,7 +38,7 @@ const FactoryUsersPage = () => {
     <Box sx={{ width: "100%" }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
         <TextField
-          label="Search Users"
+          label={t("search")}
           variant="outlined"
           value={searchTerm}
           onChange={handleSearchChange}
@@ -47,7 +50,7 @@ const FactoryUsersPage = () => {
           onClick={handleAddUser}
           sx={{ height: "fit-content" }}
         >
-          Add
+          {t("add")}
         </Button>
       </Box>
       <Grid container spacing={4}>

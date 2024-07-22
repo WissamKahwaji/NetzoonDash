@@ -6,20 +6,22 @@ import {
 } from "../../apis/services/queries";
 import { ServiceInputModel } from "../../apis/services/type";
 import { Form, Formik, FormikHelpers } from "formik";
-import {
-  Box,
-  Button,
-  Grid,
-  Stack,
-  TextareaAutosize,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, Stack, TextField, Typography } from "@mui/material";
 import ImageDragDropField from "../../components/items/inputs/imageDragDropFeild";
 import LoadingButton from "../../components/items/buttons/loadingButtons/LoadingButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+
+const validationSchema = Yup.object().shape({
+  title: Yup.string().required("Please enter service title"),
+
+  description: Yup.string().required("Please enter service description"),
+  price: Yup.number().required("Please enter service price"),
+});
 
 const AddEditServicePage = () => {
+  const { t } = useTranslation();
   const { id, ownerId, categoryId } = useParams<{
     id: string;
     ownerId: string;
@@ -28,17 +30,45 @@ const AddEditServicePage = () => {
   const { data: serviceInfo } = useGetServiceByIdQuery(id ?? "");
   const { mutate: addService } = useAddServiceMutation();
   const { mutate: editService } = useEditServiceMutation();
-  const initialValues: ServiceInputModel = {
-    ...(id && { _id: id }),
-    title: serviceInfo?.title ?? "",
-    description: serviceInfo?.description ?? "",
+  const [initialValues, setInitialValues] = useState<ServiceInputModel>({
+    title: "",
+    description: "",
     owner: ownerId ?? "",
-    whatsAppNumber: serviceInfo?.whatsAppNumber ?? "",
-    country: serviceInfo?.country ?? "AE",
-    bio: serviceInfo?.bio,
-    price: serviceInfo?.price,
+    imageUrl: "",
+    whatsAppNumber: "",
+    country: "AE",
+    bio: "",
+    price: 0,
     category: categoryId,
-  };
+  });
+
+  useEffect(() => {
+    if (id && serviceInfo) {
+      setInitialValues({
+        _id: id,
+        title: serviceInfo?.title ?? "",
+        description: serviceInfo?.description ?? "",
+        owner: ownerId ?? "",
+        imageUrl: serviceInfo.imageUrl ?? "",
+        whatsAppNumber: serviceInfo?.whatsAppNumber ?? "",
+        country: serviceInfo?.country ?? "AE",
+        bio: serviceInfo?.bio ?? "",
+        price: serviceInfo?.price ?? 0,
+        category: categoryId ?? "",
+      });
+    } else {
+      setInitialValues({
+        title: "",
+        description: "",
+        owner: ownerId ?? "",
+        whatsAppNumber: "",
+        country: "AE",
+        bio: "",
+        price: 0,
+        category: categoryId ?? "",
+      });
+    }
+  }, [id, serviceInfo, ownerId, categoryId]);
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const handleSubmit = (
     values: ServiceInputModel,
@@ -69,11 +99,12 @@ const AddEditServicePage = () => {
           mb: 3,
         }}
       >
-        {id ? `Edit ${serviceInfo?.title}` : `Add New Service`}
+        {id ? `${t("edit")} ${serviceInfo?.title}` : `${t("add_new_service")}`}
       </Typography>
       <Formik
         initialValues={initialValues}
         enableReinitialize
+        validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({
@@ -91,7 +122,7 @@ const AddEditServicePage = () => {
                   fullWidth
                   id="title"
                   name="title"
-                  label="service title"
+                  label={t("service_title")}
                   type="text"
                   value={values.title}
                   onChange={handleChange}
@@ -101,7 +132,20 @@ const AddEditServicePage = () => {
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
-                <TextareaAutosize
+                <TextField
+                  fullWidth
+                  id="description"
+                  name="description"
+                  label={t("description")}
+                  multiline
+                  minRows={1}
+                  value={values.description}
+                  onChange={handleChange}
+                  error={touched.description && Boolean(errors.description)}
+                  helperText={touched.description && errors.description}
+                  sx={{ mb: 2 }}
+                />
+                {/* <TextareaAutosize
                   id="description"
                   title="description"
                   name="description"
@@ -117,14 +161,14 @@ const AddEditServicePage = () => {
                     borderRadius: 3,
                     width: "100%",
                   }}
-                />
+                /> */}
               </Grid>
               <Grid item xs={12} lg={6}>
                 <TextField
                   fullWidth
                   id="price"
                   name="price"
-                  label="price"
+                  label={t("price")}
                   type="number"
                   value={values.price}
                   onChange={handleChange}
@@ -138,7 +182,7 @@ const AddEditServicePage = () => {
                   fullWidth
                   id="whatsAppNumber"
                   name="whatsAppNumber"
-                  label="whatsApp Number"
+                  label={t("whatsApp_number")}
                   type="tel"
                   value={values.whatsAppNumber}
                   onChange={handleChange}
@@ -146,11 +190,24 @@ const AddEditServicePage = () => {
                     touched.whatsAppNumber && Boolean(errors.whatsAppNumber)
                   }
                   helperText={touched.whatsAppNumber && errors.whatsAppNumber}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, direction: "ltr" }}
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
-                <TextareaAutosize
+                <TextField
+                  fullWidth
+                  id="bio"
+                  name="bio"
+                  label="bio"
+                  multiline
+                  minRows={1}
+                  value={values.bio}
+                  onChange={handleChange}
+                  error={touched.bio && Boolean(errors.bio)}
+                  helperText={touched.bio && errors.bio}
+                  sx={{ mb: 2 }}
+                />
+                {/* <TextareaAutosize
                   id="bio"
                   title="bio"
                   name="bio"
@@ -166,18 +223,18 @@ const AddEditServicePage = () => {
                     borderRadius: 3,
                     width: "100%",
                   }}
-                />
+                /> */}
               </Grid>
               <Grid item xs={12} lg={6}>
                 <ImageDragDropField
                   name="image"
-                  label="Service Image"
-                  oldImg={serviceInfo?.imageUrl}
+                  label={t("service_image")}
+                  oldImg={values.imageUrl}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Button variant="contained" component="label">
-                  Upload Service Images
+                  {t("upload_service_images")}
                   <input
                     type="file"
                     accept="image/*"
@@ -202,7 +259,7 @@ const AddEditServicePage = () => {
               </Grid>
               <Grid item xs={12}>
                 <Button variant="contained" component="label">
-                  Upload Product Video
+                  {t("upload_service_video")}
                   <input
                     type="file"
                     accept="video/*"
@@ -227,7 +284,7 @@ const AddEditServicePage = () => {
                 <Stack justifyContent={"center"}>
                   <LoadingButton
                     isSubmitting={isSubmitting}
-                    buttonText={id ? "Edit Service" : "Add Service"}
+                    buttonText={t("save")}
                   />
                 </Stack>
               </Grid>

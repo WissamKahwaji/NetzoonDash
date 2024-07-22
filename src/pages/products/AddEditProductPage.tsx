@@ -12,7 +12,6 @@ import {
   Radio,
   RadioGroup,
   Stack,
-  TextareaAutosize,
   TextField,
   Typography,
 } from "@mui/material";
@@ -26,8 +25,21 @@ import { Form, Formik, FormikHelpers } from "formik";
 import ImageDragDropField from "../../components/items/inputs/imageDragDropFeild";
 import LoadingButton from "../../components/items/buttons/loadingButtons/LoadingButton";
 import { useState } from "react";
+import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required("Please enter product name"),
+  condition: Yup.string().required("Please enter product condition"),
+  description: Yup.string().required("Please enter product description"),
+  price: Yup.number().required("Please enter product price"),
+  weight: Yup.number().required("Please enter product weight"),
+});
 
 const AddEditProductPage = () => {
+  const { country } = useCountry();
+  const { t } = useTranslation();
   const { id, ownerId } = useParams<{ id: string; ownerId: string }>();
 
   const { categoryId } = useParams<Params>();
@@ -53,13 +65,13 @@ const AddEditProductPage = () => {
     condition: productInfo?.condition ?? "new",
     description: productInfo?.description ?? "",
     price: productInfo?.price ?? 0,
-    quantity: productInfo?.quantity,
-    weight: productInfo?.weight,
+    quantity: productInfo?.quantity ?? 0,
+    weight: productInfo?.weight ?? 0,
     guarantee: productInfo?.guarantee ?? false,
-    address: productInfo?.address,
-    color: productInfo?.color,
-    discountPercentage: productInfo?.discountPercentage,
-    country: "AE",
+    address: productInfo?.address ?? "",
+    color: productInfo?.color ?? "",
+    discountPercentage: productInfo?.discountPercentage ?? 0,
+    country: country ?? "AE",
   };
   const handleSubmit = (
     values: ProductModel,
@@ -91,11 +103,12 @@ const AddEditProductPage = () => {
         }}
       >
         {id
-          ? `Edit ${productInfo?.name}`
-          : `Add Product in ${categoryInfo?.department.name}`}
+          ? `${t("edit")} ${productInfo?.name}`
+          : `${t("add_product_in")} ${categoryInfo?.department.name}`}
       </Typography>
       <Formik
         initialValues={initialValues}
+        validationSchema={validationSchema}
         enableReinitialize
         onSubmit={handleSubmit}
       >
@@ -114,7 +127,7 @@ const AddEditProductPage = () => {
                   fullWidth
                   id="name"
                   name="name"
-                  label="product name"
+                  label={t("product_name")}
                   type="text"
                   value={values.name}
                   onChange={handleChange}
@@ -124,7 +137,20 @@ const AddEditProductPage = () => {
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
-                <TextareaAutosize
+                <TextField
+                  fullWidth
+                  id="description"
+                  name="description"
+                  label={t("description")}
+                  multiline
+                  minRows={1}
+                  value={values.description}
+                  onChange={handleChange}
+                  error={touched.description && Boolean(errors.description)}
+                  helperText={touched.description && errors.description}
+                  sx={{ mb: 2 }}
+                />
+                {/* <TextareaAutosize
                   id="description"
                   title="description"
                   name="description"
@@ -140,14 +166,14 @@ const AddEditProductPage = () => {
                     borderRadius: 3,
                     width: "100%",
                   }}
-                />
+                /> */}
               </Grid>
               <Grid item xs={12} lg={6}>
                 <TextField
                   fullWidth
                   id="price"
                   name="price"
-                  label="price"
+                  label={t("price")}
                   type="number"
                   value={values.price}
                   onChange={handleChange}
@@ -161,7 +187,7 @@ const AddEditProductPage = () => {
                   fullWidth
                   id="weight"
                   name="weight"
-                  label="weight in KG"
+                  label={t("weight_in_KG")}
                   type="number"
                   value={values.weight}
                   onChange={handleChange}
@@ -175,7 +201,7 @@ const AddEditProductPage = () => {
                   fullWidth
                   id="quantity"
                   name="quantity"
-                  label="quantity"
+                  label={t("quantity")}
                   type="number"
                   value={values.quantity}
                   onChange={handleChange}
@@ -189,7 +215,7 @@ const AddEditProductPage = () => {
                   fullWidth
                   id="color"
                   name="color"
-                  label="product color"
+                  label={t("product_color")}
                   type="text"
                   value={values.color}
                   onChange={handleChange}
@@ -203,7 +229,7 @@ const AddEditProductPage = () => {
                   fullWidth
                   id="discountPercentage"
                   name="discountPercentage"
-                  label="discount Percentage"
+                  label={t("discount_percentage")}
                   type="number"
                   value={values.discountPercentage}
                   onChange={handleChange}
@@ -219,7 +245,7 @@ const AddEditProductPage = () => {
               </Grid>
               <Grid item xs={12} lg={6}>
                 <FormControl>
-                  <FormLabel id="condition-label">Condition</FormLabel>
+                  <FormLabel id="condition-label">{t("condition")}</FormLabel>
                   <RadioGroup
                     id="condition-type"
                     aria-labelledby="condition-type-label"
@@ -233,7 +259,7 @@ const AddEditProductPage = () => {
                       <FormControlLabel
                         key={option}
                         control={<Radio />}
-                        label={option}
+                        label={t(option)}
                         value={option}
                       />
                     ))}
@@ -245,7 +271,7 @@ const AddEditProductPage = () => {
                   fullWidth
                   id="madeIn"
                   name="madeIn"
-                  label="madeIn"
+                  label={t("madeIn")}
                   type="text"
                   value={values.madeIn}
                   onChange={handleChange}
@@ -257,13 +283,13 @@ const AddEditProductPage = () => {
               <Grid item xs={12} lg={6}>
                 <ImageDragDropField
                   name="image"
-                  label="Product Image"
+                  label={t("product_image")}
                   oldImg={productInfo?.imageUrl}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Button variant="contained" component="label">
-                  Upload Product Images
+                  {t("upload_product_images")}
                   <input
                     type="file"
                     accept="image/*"
@@ -287,7 +313,7 @@ const AddEditProductPage = () => {
               </Grid>
               <Grid item xs={12}>
                 <Button variant="contained" component="label">
-                  Upload Product Video
+                  {t("upload_product_video")}
                   <input
                     type="file"
                     accept="video/*"
@@ -312,7 +338,7 @@ const AddEditProductPage = () => {
                 <Stack justifyContent={"center"}>
                   <LoadingButton
                     isSubmitting={isSubmitting}
-                    buttonText={id ? "Edit Product" : "Add Product"}
+                    buttonText={id ? t("edit_product") : t("add_product")}
                   />
                 </Stack>
               </Grid>

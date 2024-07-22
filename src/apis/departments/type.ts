@@ -6,6 +6,7 @@ export type DepartmentModel = {
 export type DepartmentCategoryModel = {
   _id: string;
   name: string;
+  nameAr?: string;
   department: {
     _id: string;
     name: string;
@@ -16,6 +17,7 @@ export type DepartmentCategoryModel = {
 export type EditDepartmentCategoryParams = {
   _id: string;
   name: string;
+  nameAr?: string;
 };
 
 export type FactoryCategoryModel = {

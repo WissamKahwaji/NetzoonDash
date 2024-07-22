@@ -29,6 +29,15 @@ const getCategoryByIdInfo = async (categoryId: string) => {
   );
   return res.data;
 };
+const addDepartmentCategory = async (payload: EditDepartmentCategoryParams) => {
+  const data = createFormData(payload);
+  const res = await publicInstance.post(
+    API_ROUTES.DEPARTMENT.ADD_DEPARTMENT_CATEGORY(payload._id),
+    data
+  );
+  return res.data;
+};
+
 const editDepartmentCategory = async (
   payload: EditDepartmentCategoryParams
 ) => {
@@ -54,7 +63,7 @@ const getFactoriesCategoriesInfo = async () => {
   return res.data;
 };
 const getFactoryUsersInfo = async (id: string) => {
-  const res = await publicInstance.get<{ factory: UserModel[] }>(
+  const res = await publicInstance.get<{ factory: UserModel[]; title: string }>(
     API_ROUTES.CATEGORIES.GET_FACTORY_USERS(id)
   );
   return res.data;
@@ -65,6 +74,7 @@ export {
   getAllCategoriesByDepartmentInfo,
   getCategoryByIdInfo,
   editDepartmentCategory,
+  addDepartmentCategory,
   deleteDepartmentCategory,
   getFactoriesCategoriesInfo,
   getFactoryUsersInfo,

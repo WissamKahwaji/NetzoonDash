@@ -19,8 +19,10 @@ import realEstateImg from "../../assets/real_estate.jpg";
 import tradersImg from "../../assets/seller.jpg";
 import deliveryCompaniesImg from "../../assets/delivery.jpg";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const CategoriesPage = () => {
+  const { t } = useTranslation();
   const categories = [
     { url: freezoneImg, name: "free_zone_companies", type: "freezone" },
     { url: factoriesImg, name: "factories", type: "factory" },
@@ -58,7 +60,7 @@ const CategoriesPage = () => {
           color: "black",
         }}
       >
-        All Categories
+        {t("categories")}
       </Typography>
       <Grid
         container
@@ -79,7 +81,7 @@ const CategoriesPage = () => {
                             <Box component={"span"}>...</Box>
                           </>
                         ) : (
-                          category.name
+                          t(category.name)
                         )}
                       </Typography>
                     }

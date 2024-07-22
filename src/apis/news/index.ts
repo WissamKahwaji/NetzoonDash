@@ -3,11 +3,11 @@ import { createFormData } from "../../utils";
 import publicInstance from "../publicInstance";
 import { NewsModel } from "./type";
 
-const getNewsList = async () => {
+const getNewsList = async (country: string) => {
   const res = await publicInstance.get<{
     message: string;
     results: NewsModel[];
-  }>(API_ROUTES.NEWS.GET_ALL);
+  }>(API_ROUTES.NEWS.GET_ALL(country));
   return res.data.results;
 };
 

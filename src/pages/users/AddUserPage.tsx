@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAddUserMutation } from "../../apis/users/queries";
 import { UserModel } from "../../apis/users/type";
 import { useParams } from "react-router-dom";
@@ -9,8 +9,10 @@ import {
   FormControlLabel,
   FormLabel,
   Grid,
+  MenuItem,
   Radio,
   RadioGroup,
+  Select,
   Stack,
   TextField,
   Typography,
@@ -19,11 +21,52 @@ import { Form, Formik, FormikHelpers } from "formik";
 import LoadingButton from "../../components/items/buttons/loadingButtons/LoadingButton";
 import ImageDragDropField from "../../components/items/inputs/imageDragDropFeild";
 import { USER_TYPE } from "../../constants";
+import { useGetAramexCitiesQuery } from "../../apis/aramex/queries";
+import LoadingPage from "../loading-page/LoadingPage";
+import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
+
+const validationSchema = Yup.object().shape({
+  username: Yup.string().required("Please enter your username"),
+  email: Yup.string().required("Please enter your email"),
+  password: Yup.string()
+    .required("Please enter your password")
+    .min(8, "Password must be at least 8 characters long"),
+
+  firstMobile: Yup.string()
+    .matches(/^\+?\d+$/, "Invalid mobile number")
+    .min(9, "Mobile number must be at least 9 characters long"),
+  locationType: Yup.string().required("Please choose location Type"),
+  city: Yup.string().required("Please choose city"),
+  addressDetails: Yup.string().required("Please enter address Details"),
+});
 
 const AddUserPage = () => {
-  const { userType } = useParams<{ userType: string }>();
+  const { t } = useTranslation();
+  const { country } = useCountry();
+  const { userType, title } = useParams<{
+    userType: string;
+    title: string | undefined;
+  }>();
+  const {
+    data: citiesInfo,
+    isError,
+    isLoading,
+    refetch,
+  } = useGetAramexCitiesQuery(country);
+  const [selectedCity, setSelectedCity] = useState(citiesInfo?.Cities[0] || "");
   const { mutate: addUser } = useAddUserMutation();
 
+  useEffect(() => {
+    refetch();
+    if (citiesInfo) {
+      setSelectedCity(citiesInfo?.Cities[0]);
+    }
+  }, [citiesInfo, refetch, country]);
+
+  if (isError) return <div>Error !!!</div>;
+  if (isLoading) return <LoadingPage />;
   const initialValues: UserModel = {
     username: "",
     email: "",
@@ -36,7 +79,7 @@ const AddUserPage = () => {
     freezoneCity: "",
     deliverable: false,
     subcategory: "",
-    country: "AE",
+    country: country ?? "AE",
     address: "",
     netzoonBalance: 0,
     businessLicense: "",
@@ -67,6 +110,9 @@ const AddUserPage = () => {
     contactName: "",
     floorNum: 0,
     locationType: "home",
+    ...(title && {
+      title: title,
+    }),
   };
   const handleSubmit = (
     values: UserModel,
@@ -91,11 +137,12 @@ const AddUserPage = () => {
           mb: 3,
         }}
       >
-        Add User in {userType} category
+        {`${t("add_user_in")} ${t(userType!)}`}
       </Typography>
       <Formik
         initialValues={initialValues}
         enableReinitialize
+        validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({
@@ -113,13 +160,13 @@ const AddUserPage = () => {
                   fullWidth
                   id="username"
                   name="username"
-                  label="user name"
+                  label={t("user_name")}
                   type="text"
                   value={values.username}
                   onChange={handleChange}
                   error={touched.username && Boolean(errors.username)}
                   helperText={touched.username && errors.username}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, direction: "ltr" }}
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
@@ -127,13 +174,13 @@ const AddUserPage = () => {
                   fullWidth
                   id="email"
                   name="email"
-                  label="Email"
+                  label={t("email")}
                   type="email"
                   value={values.email}
                   onChange={handleChange}
                   error={touched.email && Boolean(errors.email)}
                   helperText={touched.email && errors.email}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, direction: "ltr" }}
                 />
               </Grid>
 
@@ -142,7 +189,7 @@ const AddUserPage = () => {
                   fullWidth
                   id="contactName"
                   name="contactName"
-                  label="contact Name"
+                  label={t("contact_name")}
                   type="text"
                   value={values.contactName}
                   onChange={handleChange}
@@ -156,13 +203,13 @@ const AddUserPage = () => {
                   fullWidth
                   id="firstMobile"
                   name="firstMobile"
-                  label="Phone Number"
+                  label={t("first_mobile")}
                   type="tel"
                   value={values.firstMobile}
                   onChange={handleChange}
                   error={touched.firstMobile && Boolean(errors.contactName)}
                   helperText={touched.firstMobile && errors.firstMobile}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, direction: "ltr" }}
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
@@ -170,16 +217,18 @@ const AddUserPage = () => {
                   fullWidth
                   id="password"
                   name="password"
-                  label="password"
+                  label={t("password")}
                   type="password"
                   value={values.password}
                   onChange={handleChange}
                   error={touched.password && Boolean(errors.password)}
                   helperText={touched.password && errors.password}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, direction: "ltr" }}
                 />
               </Grid>
-              {userType === USER_TYPE.LOCAL_COMPANY && (
+              {(userType === USER_TYPE.LOCAL_COMPANY ||
+                userType === USER_TYPE.TRADER ||
+                userType === USER_TYPE.FREEZONE) && (
                 <Grid item xs={12} lg={6}>
                   <FormControlLabel
                     control={
@@ -192,11 +241,15 @@ const AddUserPage = () => {
                         color="primary"
                       />
                     }
-                    label="Are your products shareable by the customer?"
+                    label={t("are_your_products_shareable_by_the_customer")}
+                    sx={{ direction: "ltr" }}
                   />
                 </Grid>
               )}
-              {userType === USER_TYPE.LOCAL_COMPANY && (
+              {(userType === USER_TYPE.LOCAL_COMPANY ||
+                userType === USER_TYPE.FACTORY ||
+                userType === USER_TYPE.TRADER ||
+                userType === USER_TYPE.FREEZONE) && (
                 <Grid item xs={12} lg={6}>
                   <FormControlLabel
                     control={
@@ -209,7 +262,8 @@ const AddUserPage = () => {
                         color="primary"
                       />
                     }
-                    label="Do You Offer Services rather than products?"
+                    label={t("do_you_offer_services_rather_than_products")}
+                    sx={{ direction: "ltr" }}
                   />
                 </Grid>
               )}
@@ -226,7 +280,8 @@ const AddUserPage = () => {
                         color="primary"
                       />
                     }
-                    label="Is there a warehouse?"
+                    label={t("is_there_a_warehouse")}
+                    sx={{ direction: "ltr" }}
                   />
                 </Grid>
               )}
@@ -247,7 +302,8 @@ const AddUserPage = () => {
                         color="primary"
                       />
                     }
-                    label="Is there food delivery?"
+                    label={t("is_there_food_delivery")}
+                    sx={{ direction: "ltr" }}
                   />
                 </Grid>
               )}
@@ -255,7 +311,7 @@ const AddUserPage = () => {
                 <Grid item xs={12} lg={6}>
                   <FormControl>
                     <FormLabel id="delivery-type-label">
-                      Delivery Type
+                      {t("delivery_type")}
                     </FormLabel>
                     <RadioGroup
                       id="delivery-type"
@@ -276,7 +332,7 @@ const AddUserPage = () => {
                         <FormControlLabel
                           key={option}
                           control={<Radio />}
-                          label={option}
+                          label={t(option)}
                           value={option}
                         />
                       ))}
@@ -290,7 +346,7 @@ const AddUserPage = () => {
                     fullWidth
                     id="deliveryCarsNum"
                     name="deliveryCarsNum"
-                    label="deliveryCarsNum"
+                    label={t("deliveryCarsNum")}
                     type="number"
                     value={values.deliveryCarsNum}
                     onChange={handleChange}
@@ -310,7 +366,7 @@ const AddUserPage = () => {
                     fullWidth
                     id="deliveryMotorsNum"
                     name="deliveryMotorsNum"
-                    label="deliveryMotorsNum"
+                    label={t("deliveryMotorsNum")}
                     type="number"
                     value={values.deliveryMotorsNum}
                     onChange={handleChange}
@@ -326,10 +382,35 @@ const AddUserPage = () => {
                 </Grid>
               )}
               <Grid item xs={12}>
-                <Typography>Location Info:</Typography>
+                <Typography>{t("location_info")} :</Typography>
               </Grid>
               <Grid item xs={12} lg={6}>
-                <TextField
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  justifyItems="center"
+                  alignItems="center"
+                >
+                  <FormLabel>{t("city")} :</FormLabel>
+                  <Select
+                    value={selectedCity}
+                    displayEmpty
+                    inputProps={{ "aria-label": "Select city" }}
+                    onChange={e => {
+                      setSelectedCity(e.target.value);
+                      setFieldValue("city", e.target.value);
+                    }}
+                    sx={{ width: "85%", direction: "ltr" }}
+                  >
+                    {citiesInfo?.Cities.map((city, index) => (
+                      <MenuItem key={index} value={city}>
+                        {city}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Stack>
+
+                {/* <TextField
                   fullWidth
                   id="city"
                   name="city"
@@ -340,14 +421,14 @@ const AddUserPage = () => {
                   error={touched.city && Boolean(errors.city)}
                   helperText={touched.city && errors.city}
                   sx={{ mb: 2 }}
-                />
+                /> */}
               </Grid>
               <Grid item xs={12} lg={6}>
                 <TextField
                   fullWidth
                   id="addressDetails"
                   name="addressDetails"
-                  label="address Details"
+                  label={t("address_details")}
                   type="text"
                   value={values.addressDetails}
                   onChange={handleChange}
@@ -363,7 +444,7 @@ const AddUserPage = () => {
                   fullWidth
                   id="floorNum"
                   name="floorNum"
-                  label="floor Number"
+                  label={t("floor_number")}
                   type="text"
                   value={values.floorNum}
                   onChange={handleChange}
@@ -374,7 +455,9 @@ const AddUserPage = () => {
               </Grid>
               <Grid item xs={12} lg={6}>
                 <FormControl>
-                  <FormLabel id="location-type-label">Location Type</FormLabel>
+                  <FormLabel id="location-type-label">
+                    {t("location_type")}
+                  </FormLabel>
                   <RadioGroup
                     id="location-type"
                     aria-labelledby="location-type-label"
@@ -388,7 +471,7 @@ const AddUserPage = () => {
                       <FormControlLabel
                         key={option}
                         control={<Radio />}
-                        label={option}
+                        label={t(option)}
                         value={option}
                       />
                     ))}
@@ -436,7 +519,7 @@ const AddUserPage = () => {
                 <Stack justifyContent={"center"}>
                   <LoadingButton
                     isSubmitting={isSubmitting}
-                    buttonText={"submit"}
+                    buttonText={t("submit")}
                   />
                 </Stack>
               </Grid>

@@ -1,20 +1,19 @@
-import { UserModel } from "../users/type";
-
 export type DealsCategoryModel = {
   _id?: string;
   name: string;
+  nameAr?: string;
 };
 
 export type DealsItemModel = {
   _id?: string;
-  owner?: UserModel;
+  owner?: string;
   name?: string;
   imgUrl?: string;
   companyName?: string;
   prevPrice?: number;
   currentPrice?: number;
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: string;
+  endDate?: string;
   location?: string;
   category?: string;
   country: string;

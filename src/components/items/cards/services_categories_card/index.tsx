@@ -11,16 +11,20 @@ import { Delete, Edit } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DeleteServiceCategoryDialog from "../../dialogs/delete_service_category_dialog";
+import { useTranslation } from "react-i18next";
 
 interface ServicesCategoriesCardProps {
   categoryId: string;
   name: string;
+  nameAr: string;
 }
 const ServicesCategoriesCard = ({
   name,
-
+  nameAr,
   categoryId,
 }: ServicesCategoriesCardProps) => {
+  const { i18n } = useTranslation();
+  const selectedLanguage = i18n.language;
   const [openDeleteCategoryDialog, setOpenDeleteCategoryDialog] =
     useState<boolean>(false);
   const navigate = useNavigate();
@@ -37,13 +41,28 @@ const ServicesCategoriesCard = ({
         title={
           <CardActionArea onClick={() => navigate(`category/${categoryId}`)}>
             <Typography>
-              {name.length > 50 ? (
+              {selectedLanguage === "en" ? (
                 <>
-                  {name.slice(0, 50)}
-                  <Box component={"span"}>...</Box>
+                  {name.length > 50 ? (
+                    <>
+                      {name.slice(0, 50)}
+                      <Box component={"span"}>...</Box>
+                    </>
+                  ) : (
+                    name
+                  )}
                 </>
               ) : (
-                name
+                <>
+                  {nameAr.length > 50 ? (
+                    <>
+                      {nameAr.slice(0, 50)}
+                      <Box component={"span"}>...</Box>
+                    </>
+                  ) : (
+                    nameAr
+                  )}
+                </>
               )}
             </Typography>
           </CardActionArea>

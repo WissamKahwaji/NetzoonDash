@@ -6,30 +6,34 @@ import {
 } from "../../apis/news/queries";
 import { NewsModel } from "../../apis/news/type";
 import { Form, Formik, FormikHelpers } from "formik";
-import {
-  Box,
-  Grid,
-  Stack,
-  TextareaAutosize,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Grid, Stack, TextField, Typography } from "@mui/material";
 import LoadingButton from "../../components/items/buttons/loadingButtons/LoadingButton";
 import ImageDragDropField from "../../components/items/inputs/imageDragDropFeild";
+import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
+
+const validationSchema = Yup.object().shape({
+  title: Yup.string().required("Please enter news Title"),
+  description: Yup.string().required("Please enter news description"),
+});
 
 const AddEditNewsPage = () => {
+  const { country } = useCountry();
+  const { t } = useTranslation();
   const { id, ownerId } = useParams<{
     id: string;
     ownerId: string;
   }>();
-  const { data: newsInfo } = useGetNewsByIdQuery(id ?? "");
+  const { data: newsInfo } = useGetNewsByIdQuery(id!);
   const { mutate: addNews } = useAddNewsMutation();
   const { mutate: editNews } = useEditNewsMutation();
   const initialValues: NewsModel = {
     ...(id && { _id: id }),
     creator: ownerId,
-    title: newsInfo?.title ?? "",
-    description: newsInfo?.description ?? "",
+    title: newsInfo?.title || "",
+    description: newsInfo?.description || "",
+    country: newsInfo?.country ?? country,
   };
   const handleSubmit = (
     values: NewsModel,
@@ -59,11 +63,12 @@ const AddEditNewsPage = () => {
           mb: 3,
         }}
       >
-        {id ? `Edit ${newsInfo?.title}` : `Add New Ads`}
+        {id ? `${t("edit")} ${newsInfo?.title}` : t("add_news")}
       </Typography>
       <Formik
         initialValues={initialValues}
         enableReinitialize
+        validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({ values, touched, errors, isSubmitting, handleChange }) => (
@@ -74,7 +79,7 @@ const AddEditNewsPage = () => {
                   fullWidth
                   id="title"
                   name="title"
-                  label="Title"
+                  label={t("title")}
                   type="text"
                   value={values.title}
                   onChange={handleChange}
@@ -84,22 +89,18 @@ const AddEditNewsPage = () => {
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
-                <TextareaAutosize
+                <TextField
+                  fullWidth
                   id="description"
-                  title="description"
                   name="description"
-                  placeholder="description"
-                  minRows={3}
-                  //   type="text"
+                  label={t("description")}
+                  multiline
+                  minRows={1}
                   value={values.description}
                   onChange={handleChange}
-                  style={{
-                    marginBottom: 2,
-                    padding: 7,
-                    border: "1px solid gray",
-                    borderRadius: 3,
-                    width: "100%",
-                  }}
+                  error={touched.description && Boolean(errors.description)}
+                  helperText={touched.description && errors.description}
+                  sx={{ mb: 2 }}
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
@@ -113,7 +114,7 @@ const AddEditNewsPage = () => {
                 <Stack justifyContent={"center"}>
                   <LoadingButton
                     isSubmitting={isSubmitting}
-                    buttonText={id ? "Edit News" : "Add News"}
+                    buttonText={t("save")}
                   />
                 </Stack>
               </Grid>

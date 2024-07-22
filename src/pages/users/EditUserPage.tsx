@@ -13,24 +13,52 @@ import {
   FormControlLabel,
   FormLabel,
   Grid,
+  MenuItem,
   Radio,
   RadioGroup,
+  Select,
   Stack,
-  TextareaAutosize,
   TextField,
   Typography,
 } from "@mui/material";
 import { USER_TYPE } from "../../constants";
 import LoadingButton from "../../components/items/buttons/loadingButtons/LoadingButton";
 import ImageDragDropField from "../../components/items/inputs/imageDragDropFeild";
+import { useEffect, useState } from "react";
+import { useGetAramexCitiesQuery } from "../../apis/aramex/queries";
+import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
+
+const validationSchema = Yup.object().shape({
+  username: Yup.string().required("Please enter your username"),
+  email: Yup.string().required("Please enter your email"),
+
+  firstMobile: Yup.string().min(
+    9,
+    "Mobile number must be at least 9 characters long"
+  ),
+  locationType: Yup.string().required("Please choose location Type"),
+  city: Yup.string().required("Please choose city"),
+  addressDetails: Yup.string().required("Please enter address Details"),
+});
 
 const EditUserPage = () => {
   const { userId } = useParams<{ userId: string }>();
+  const { country } = useCountry();
+  const { t } = useTranslation();
   const {
     data: userInfo,
     isError,
     isLoading,
   } = useGetUserByIdQuery(userId ?? "");
+  const {
+    data: citiesInfo,
+    isError: isErrorCities,
+    isLoading: isLoadingCities,
+    refetch,
+  } = useGetAramexCitiesQuery(country);
+  const [selectedCity, setSelectedCity] = useState(userInfo?.city || "");
   const { mutate: editUser } = useEditUserMutation();
   const initialValues: UserModel = {
     _id: userId,
@@ -61,7 +89,7 @@ const EditUserPage = () => {
     deliveryType: userInfo?.deliveryType,
     deliveryCarsNum: userInfo?.deliveryCarsNum,
     deliveryMotorsNum: userInfo?.deliveryMotorsNum,
-
+    netzoonBalance: userInfo?.netzoonBalance,
     city: userInfo?.city,
     addressDetails: userInfo?.addressDetails,
     contactName: userInfo?.contactName,
@@ -80,8 +108,15 @@ const EditUserPage = () => {
     });
   };
 
-  if (isError) return <div>Error !!!</div>;
-  if (isLoading) return <LoadingPage />;
+  useEffect(() => {
+    refetch();
+    if (citiesInfo && userInfo) {
+      setSelectedCity(userInfo?.city ?? "");
+    }
+  }, [citiesInfo, userInfo, userInfo?.city, country, refetch]);
+
+  if (isError || isErrorCities) return <div>Error !!!</div>;
+  if (isLoading || isLoadingCities) return <LoadingPage />;
   return (
     <Box sx={{ width: "100%" }}>
       <Typography
@@ -96,8 +131,45 @@ const EditUserPage = () => {
       >
         {userInfo?.username}
       </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "end",
+          alignItems: "center",
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: "1rem",
+            fontWeight: "bold",
+            textTransform: "capitalize",
+          }}
+        >
+          {t("user_type")} : {t(userInfo?.userType ?? "")}
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "end",
+          alignItems: "center",
+          mt: 1,
+          mb: 3,
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: "1rem",
+            fontWeight: "bold",
+            textTransform: "capitalize",
+          }}
+        >
+          {t("netzoon_balance")} : {userInfo?.netzoonBalance}
+        </Typography>
+      </Box>
       <Formik
         initialValues={initialValues}
+        validationSchema={validationSchema}
         enableReinitialize
         onSubmit={handleSubmit}
       >
@@ -116,13 +188,13 @@ const EditUserPage = () => {
                   fullWidth
                   id="email"
                   name="email"
-                  label="Email"
+                  label={t("email")}
                   type="email"
                   value={values.email}
                   onChange={handleChange}
                   error={touched.email && Boolean(errors.email)}
                   helperText={touched.email && errors.email}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, direction: "ltr" }}
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
@@ -130,21 +202,22 @@ const EditUserPage = () => {
                   fullWidth
                   id="username"
                   name="username"
-                  label="user name"
+                  label={t("user_name")}
                   type="text"
                   value={values.username}
                   onChange={handleChange}
                   error={touched.username && Boolean(errors.username)}
                   helperText={touched.username && errors.username}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, direction: "ltr" }}
                 />
               </Grid>
+
               <Grid item xs={12} lg={6}>
                 <TextField
                   fullWidth
                   id="contactName"
                   name="contactName"
-                  label="contact Name"
+                  label={t("contact_name")}
                   type="text"
                   value={values.contactName}
                   onChange={handleChange}
@@ -158,7 +231,7 @@ const EditUserPage = () => {
                   fullWidth
                   id="firstMobile"
                   name="firstMobile"
-                  label="Phone Number"
+                  label={t("first_mobile")}
                   type="tel"
                   value={values.firstMobile}
                   onChange={handleChange}
@@ -168,7 +241,20 @@ const EditUserPage = () => {
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
-                <TextareaAutosize
+                <TextField
+                  fullWidth
+                  id="bio"
+                  name="bio"
+                  label={t("bio")}
+                  multiline
+                  minRows={1}
+                  value={values.bio}
+                  onChange={handleChange}
+                  error={touched.bio && Boolean(errors.bio)}
+                  helperText={touched.bio && errors.bio}
+                  sx={{ mb: 2 }}
+                />
+                {/* <TextareaAutosize
                   id="bio"
                   title="bio"
                   name="bio"
@@ -184,10 +270,23 @@ const EditUserPage = () => {
                     borderRadius: 3,
                     width: "100%",
                   }}
-                />
+                /> */}
               </Grid>
               <Grid item xs={12} lg={6}>
-                <TextareaAutosize
+                <TextField
+                  fullWidth
+                  id="description"
+                  name="description"
+                  label={t("description")}
+                  multiline
+                  minRows={1}
+                  value={values.description}
+                  onChange={handleChange}
+                  error={touched.description && Boolean(errors.description)}
+                  helperText={touched.description && errors.description}
+                  sx={{ mb: 2 }}
+                />
+                {/* <TextareaAutosize
                   id="description"
                   title="description"
                   name="description"
@@ -203,7 +302,7 @@ const EditUserPage = () => {
                     borderRadius: 3,
                     width: "100%",
                   }}
-                />
+                /> */}
               </Grid>
               <Grid item xs={12} lg={6}>
                 <TextField
@@ -211,12 +310,12 @@ const EditUserPage = () => {
                   id="website"
                   name="website"
                   label="website"
-                  type="url"
+                  type="text"
                   value={values.website}
                   onChange={handleChange}
                   error={touched.website && Boolean(errors.website)}
                   helperText={touched.website && errors.website}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, direction: "ltr" }}
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
@@ -225,12 +324,12 @@ const EditUserPage = () => {
                   id="link"
                   name="link"
                   label="link"
-                  type="url"
+                  type="text"
                   value={values.link}
                   onChange={handleChange}
                   error={touched.link && Boolean(errors.link)}
                   helperText={touched.link && errors.link}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, direction: "ltr" }}
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
@@ -248,7 +347,9 @@ const EditUserPage = () => {
                 />
               </Grid>
 
-              {userInfo?.userType === USER_TYPE.LOCAL_COMPANY && (
+              {(userInfo?.userType === USER_TYPE.LOCAL_COMPANY ||
+                userInfo?.userType === USER_TYPE.TRADER ||
+                userInfo?.userType === USER_TYPE.FREEZONE) && (
                 <Grid item xs={12} lg={6}>
                   <FormControlLabel
                     control={
@@ -261,11 +362,15 @@ const EditUserPage = () => {
                         color="primary"
                       />
                     }
-                    label="Are your products shareable by the customer?"
+                    label={t("are_your_products_shareable_by_the_customer")}
+                    sx={{ direction: "ltr" }}
                   />
                 </Grid>
               )}
-              {userInfo?.userType === USER_TYPE.LOCAL_COMPANY && (
+              {(userInfo?.userType === USER_TYPE.LOCAL_COMPANY ||
+                userInfo?.userType === USER_TYPE.FACTORY ||
+                userInfo?.userType === USER_TYPE.TRADER ||
+                userInfo?.userType === USER_TYPE.FREEZONE) && (
                 <Grid item xs={12} lg={6}>
                   <FormControlLabel
                     control={
@@ -278,7 +383,8 @@ const EditUserPage = () => {
                         color="primary"
                       />
                     }
-                    label="Do You Offer Services rather than products?"
+                    label={t("do_you_offer_services_rather_than_products")}
+                    sx={{ direction: "ltr" }}
                   />
                 </Grid>
               )}
@@ -295,7 +401,8 @@ const EditUserPage = () => {
                         color="primary"
                       />
                     }
-                    label="Is there a warehouse?"
+                    label={t("is_there_a_warehouse")}
+                    sx={{ direction: "ltr" }}
                   />
                 </Grid>
               )}
@@ -316,7 +423,8 @@ const EditUserPage = () => {
                         color="primary"
                       />
                     }
-                    label="Is there food delivery?"
+                    label={t("is_there_food_delivery")}
+                    sx={{ direction: "ltr" }}
                   />
                 </Grid>
               )}
@@ -324,7 +432,7 @@ const EditUserPage = () => {
                 <Grid item xs={12} lg={6}>
                   <FormControl>
                     <FormLabel id="delivery-type-label">
-                      Delivery Type
+                      {t("delivery_type")}
                     </FormLabel>
                     <RadioGroup
                       id="delivery-type"
@@ -345,7 +453,7 @@ const EditUserPage = () => {
                         <FormControlLabel
                           key={option}
                           control={<Radio />}
-                          label={option}
+                          label={t(option)}
                           value={option}
                         />
                       ))}
@@ -359,7 +467,7 @@ const EditUserPage = () => {
                     fullWidth
                     id="deliveryCarsNum"
                     name="deliveryCarsNum"
-                    label="deliveryCarsNum"
+                    label={t("deliveryCarsNum")}
                     type="number"
                     value={values.deliveryCarsNum}
                     onChange={handleChange}
@@ -379,7 +487,7 @@ const EditUserPage = () => {
                     fullWidth
                     id="deliveryMotorsNum"
                     name="deliveryMotorsNum"
-                    label="deliveryMotorsNum"
+                    label={t("deliveryMotorsNum")}
                     type="number"
                     value={values.deliveryMotorsNum}
                     onChange={handleChange}
@@ -395,10 +503,34 @@ const EditUserPage = () => {
                 </Grid>
               )}
               <Grid item xs={12}>
-                <Typography>Location Info:</Typography>
+                <Typography>{t("location_info")} :</Typography>
               </Grid>
               <Grid item xs={12} lg={6}>
-                <TextField
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  justifyItems="center"
+                  alignItems="center"
+                >
+                  <FormLabel>{t("city")} :</FormLabel>
+                  <Select
+                    value={selectedCity}
+                    displayEmpty
+                    inputProps={{ "aria-label": "Select city" }}
+                    onChange={e => {
+                      setSelectedCity(e.target.value);
+                      setFieldValue("city", e.target.value);
+                    }}
+                    sx={{ width: "85%", direction: "ltr" }}
+                  >
+                    {citiesInfo?.Cities.map((city, index) => (
+                      <MenuItem key={index} value={city}>
+                        {city}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Stack>
+                {/* <TextField
                   fullWidth
                   id="city"
                   name="city"
@@ -409,14 +541,14 @@ const EditUserPage = () => {
                   error={touched.city && Boolean(errors.city)}
                   helperText={touched.city && errors.city}
                   sx={{ mb: 2 }}
-                />
+                /> */}
               </Grid>
               <Grid item xs={12} lg={6}>
                 <TextField
                   fullWidth
                   id="addressDetails"
                   name="addressDetails"
-                  label="address Details"
+                  label={t("address_details")}
                   type="text"
                   value={values.addressDetails}
                   onChange={handleChange}
@@ -432,7 +564,7 @@ const EditUserPage = () => {
                   fullWidth
                   id="floorNum"
                   name="floorNum"
-                  label="floor Number"
+                  label={t("floor_number")}
                   type="text"
                   value={values.floorNum}
                   onChange={handleChange}
@@ -443,7 +575,9 @@ const EditUserPage = () => {
               </Grid>
               <Grid item xs={12} lg={6}>
                 <FormControl>
-                  <FormLabel id="location-type-label">Location Type</FormLabel>
+                  <FormLabel id="location-type-label">
+                    {t("location_type")}
+                  </FormLabel>
                   <RadioGroup
                     id="location-type"
                     aria-labelledby="location-type-label"
@@ -457,7 +591,7 @@ const EditUserPage = () => {
                       <FormControlLabel
                         key={option}
                         control={<Radio />}
-                        label={option}
+                        label={t(option)}
                         value={option}
                       />
                     ))}
@@ -484,7 +618,7 @@ const EditUserPage = () => {
                 <Stack justifyContent={"center"}>
                   <LoadingButton
                     isSubmitting={isSubmitting}
-                    buttonText={"save"}
+                    buttonText={t("save")}
                   />
                 </Stack>
               </Grid>

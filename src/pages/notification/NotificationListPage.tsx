@@ -9,8 +9,10 @@ import {
 } from "@mui/material";
 import { useGetNotificationsListQuery } from "../../apis/notification/queries";
 import LoadingPage from "../loading-page/LoadingPage";
+import { useTranslation } from "react-i18next";
 
 const NotificationListPage = () => {
+  const { t } = useTranslation();
   const {
     data: notificationInfo,
     isError,
@@ -32,7 +34,7 @@ const NotificationListPage = () => {
           mb: 3,
         }}
       >
-        Notifications
+        {t("notifications")}
       </Typography>
       <Grid
         container

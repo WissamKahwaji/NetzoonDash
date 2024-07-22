@@ -10,6 +10,8 @@ const DEPARTMENT = {
     `/departments/category/${categoryId}`,
   EDIT_DEPARTMENT_CATEGORY: (categoryId: string) =>
     `/departments/edit-category/${categoryId}`,
+  ADD_DEPARTMENT_CATEGORY: (departmentId: string) =>
+    `/departments/${departmentId}/add-category`,
   DELETE_DEPARTMENT_CATEGORY: (categoryId: string) =>
     `/departments/delete-category/${categoryId}`,
 };
@@ -20,17 +22,18 @@ const CATEGORIES = {
 };
 
 const USER = {
-  GET_ALL: "/user/get-all-users",
+  GET_ALL: (country: string) => `/user/get-all-users?country=${country}`,
   GET_BY_ID: (userId: string) => `/user/getUser/${userId}`,
-  GET_BY_TYPE: (userType: string) => `/user/getUserByType?userType=${userType}`,
+  GET_BY_TYPE: (userType: string, country: string) =>
+    `/user/getUserByType?userType=${userType}&country=${country}`,
   ADD: "/user/register",
   EDIT: (userId: string) => `/user/net-editUser/${userId}`,
   DELETE: (userId: string) => `/user/delete-user/${userId}`,
 };
 
 const PRODUCT = {
-  GET_BY_CATEGORY: (categoryId: string) =>
-    `/departments/${categoryId}/all-products`,
+  GET_BY_CATEGORY: (categoryId: string, country: string) =>
+    `/departments/${categoryId}/all-products?country=${country}`,
   ADD: "/departments/addProduct",
   GET_BY_ID: (productId: string) => `/departments/getproduct/${productId}`,
   EDIT: (productId: string) => `/departments//editProduct/${productId}`,
@@ -55,7 +58,7 @@ const SERVICES = {
 };
 
 const ADS = {
-  GET_ALL: "/advertisements",
+  GET_ALL: (country: string) => `/advertisements?country=${country}`,
   GET_BY_ID: (id: string) => `/advertisements/${id}`,
   DELETE: (id: string) => `/advertisements/${id}`,
   ADD: `/advertisements/createAds`,
@@ -63,7 +66,7 @@ const ADS = {
 };
 
 const NEWS = {
-  GET_ALL: "/news",
+  GET_ALL: (country: string) => `/news?country=${country}`,
   DELETE: (id: string) => `/news/${id}`,
   GET_BY_ID: (id: string) => `/news/${id}`,
   EDIT: (id: string) => `/news/${id}`,
@@ -77,6 +80,7 @@ const NOTI = {
 const VEHICLE = {
   GET_ALL_CAR: (country: string) => `/categories/cars?country=${country}`,
   GET_ALL_PLANES: (country: string) => `/categories/planes?country=${country}`,
+  GET_ALL_SHIPS: (country: string) => `/categories/ships?country=${country}`,
   GET_BY_ID: (id: string) => `/categories/vehicle/${id}`,
   DELETE: (id: string) => `/categories/vehicle/${id}`,
   EDIT: (id: string) => `/categories/vehicle/edit-vehicle/${id}`,
@@ -89,8 +93,59 @@ const DEALS = {
   DELETE_CATEGORY: (id: string) => `/deals/delete-category/${id}`,
   EDIT_CATEGORY: (id: string) => `/deals/edit-category/${id}`,
   GET_CATEGORY_BY_ID: (id: string) => `/deals/get-category/${id}`,
+
   GET_DEALS_BY_CATEGORY: (category: string, country: string) =>
     `/deals/get-deals-ByCat?category=${category}&country=${country}`,
+  DELETE_DEAL: (id: string) => `/deals/${id}`,
+  ADD_DEAL: `/deals/addDeal`,
+  EDIT_DEAL: (id: string) => `/deals/${id}`,
+  GET_DEAL_BY_ID: (id: string) => `/deals/${id}`,
+};
+
+const SLIDER = {
+  GET: "/dynamic-sliders/",
+  EDIT_SLIDER: (sliderId: string) => `/dynamic-sliders/edit/${sliderId}`,
+};
+
+const OPINION = {
+  GET_ALL: "/openions",
+};
+
+const QUESTION = {
+  GET_ALL: "/questions",
+};
+
+const REQUEST = {
+  GET_ALL: "/requests",
+};
+
+const COMPLAINTS = {
+  GET_ALL: "/complaints",
+  REPLY: (id: string) => `/complaints/${id}`,
+};
+
+const ORDER = {
+  GET_ALL: "/order/get-all",
+  GET_BY_ID: (id: string) => `/order/${id}`,
+  DELETE: (id: string) => `/order/delete/${id}`,
+  EDIT_STATUS: (id: string) => `/order/edit-status/${id}`,
+};
+
+const ARAMEX = {
+  FETCH_CITIES: (country: string) =>
+    `/aramex/fetchCities?countryCode=${country}`,
+  TRACK_PICKUP: (pickupId: string) =>
+    `/aramex/trackPickup?pickupId=${pickupId}`,
+};
+
+const PRIVACY = {
+  GET: "/legalAdvices",
+  EDIT: "/legalAdvices",
+};
+
+const FEES = {
+  GET_ALL: "/fees",
+  EDIT: "/fees",
 };
 
 const API_ROUTES = {
@@ -105,5 +160,14 @@ const API_ROUTES = {
   NOTI,
   VEHICLE,
   DEALS,
+  SLIDER,
+  OPINION,
+  QUESTION,
+  REQUEST,
+  COMPLAINTS,
+  ORDER,
+  ARAMEX,
+  PRIVACY,
+  FEES,
 };
 export default API_ROUTES;

@@ -12,6 +12,7 @@ import React from "react";
 import { TransitionProps } from "@mui/material/transitions";
 import { DeleteDepartmentCategoryDialogProps } from "./type";
 import { useDeleteDepartmentCategoryMutation } from "../../../../apis/departments/queries";
+import { useTranslation } from "react-i18next";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -26,6 +27,7 @@ const DeleteDepartmentCategoryDialog = ({
   onClose,
   category,
 }: DeleteDepartmentCategoryDialogProps) => {
+  const { t } = useTranslation();
   const { mutate: deleteDepartmentCategory } =
     useDeleteDepartmentCategoryMutation();
   const handleDeleteCategory = () => {
@@ -34,12 +36,14 @@ const DeleteDepartmentCategoryDialog = ({
   return (
     <Dialog open={open} onClose={onClose} TransitionComponent={Transition}>
       <DialogContent>
-        <DialogContentText>{`are you sure you want to delete ${category.name}`}</DialogContentText>
+        <DialogContentText>{`${t("are_you_sure_you_want_to_delete")} ${
+          category.name
+        }`}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>cancel</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
         <Button variant="contained" onClick={handleDeleteCategory}>
-          delete
+          {t("delete")}
         </Button>
       </DialogActions>
     </Dialog>

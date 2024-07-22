@@ -31,6 +31,7 @@ const useGetServiceCategoryByIdQuery = (id: string) =>
   useQuery({
     queryKey: ["get-service-category-by-id"],
     queryFn: () => getServiceCategoryById(id),
+    enabled: !!id,
   });
 
 const useAddServiceCategoryMutation = () => {
@@ -94,6 +95,7 @@ const useGetServiceByIdQuery = (id: string) =>
   useQuery({
     queryKey: ["get-service-by-id"],
     queryFn: () => getServiceById(id),
+    enabled: !!id,
   });
 
 const useAddServiceMutation = () => {

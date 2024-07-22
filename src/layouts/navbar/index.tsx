@@ -1,8 +1,10 @@
-import { Box, Toolbar } from "@mui/material";
-
+import { Box, Grid, Toolbar } from "@mui/material";
 import { AppBar } from "../style";
 import Logo from "../../assets/logo-white.png";
 import TProps from "./type";
+import LanguageButton from "../../components/items/buttons/languageButton";
+
+import CountryPicker from "../../components/items/buttons/countryPicker";
 
 const NavBar = ({ open }: TProps) => {
   return (
@@ -31,17 +33,10 @@ const NavBar = ({ open }: TProps) => {
               }}
             />
           )}
-          {/* <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              ...(open && { display: "none" }),
-            }}
-          >
-            <MenuIcon fontSize="small" />
-          </IconButton> */}
+          <LanguageButton className="language-button" />
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <CountryPicker />
+          </Grid>
         </Box>
       </Toolbar>
     </AppBar>

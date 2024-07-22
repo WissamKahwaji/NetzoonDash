@@ -1,20 +1,32 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetDealsByCategoryQuery } from "../../apis/deals/queiries";
+import {
+  useGetDealCategoryByIdQuery,
+  useGetDealsByCategoryQuery,
+} from "../../apis/deals/queiries";
 import LoadingPage from "../loading-page/LoadingPage";
 import { Box, Button, Grid, Typography } from "@mui/material";
-import { useGetCategoryByIdQuery } from "../../apis/departments/queries";
+import DealCard from "../../components/items/cards/deal_card";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
+import { useEffect } from "react";
 
 const DealsListPage = () => {
+  const { country } = useCountry();
+  const { t, i18n } = useTranslation();
+  const selectedLanguage = i18n.language;
   const { categoryId } = useParams<{ categoryId: string }>();
-  const { data: categoryInfo } = useGetCategoryByIdQuery(categoryId ?? "");
+  // const { data: categoryInfo } = useGetCategoryByIdQuery(categoryId ?? "");
   const {
     data: dealsInfo,
     isError,
     isLoading,
-  } = useGetDealsByCategoryQuery(categoryInfo?.name ?? "", "AE");
-
+    refetch,
+  } = useGetDealsByCategoryQuery(categoryId ?? "", country);
+  const { data: categoryInfo } = useGetDealCategoryByIdQuery(categoryId!);
   const navigate = useNavigate();
-
+  useEffect(() => {
+    refetch();
+  }, [country, refetch]);
   if (isError) return <div>Error !!!</div>;
   if (isLoading) return <LoadingPage />;
 
@@ -31,7 +43,9 @@ const DealsListPage = () => {
           color: "black",
         }}
       >
-        {categoryInfo?.name}
+        {selectedLanguage === "en"
+          ? categoryInfo?.name
+          : categoryInfo?.nameAr ?? categoryInfo?.name}
       </Typography>
       <Box sx={{ display: "flex", justifyContent: "end" }}>
         <Button
@@ -44,7 +58,7 @@ const DealsListPage = () => {
             navigate(`owner`);
           }}
         >
-          Add Deal In This Category
+          {t("add_deal_in_this_category")}
         </Button>
       </Box>
       <Grid container gap={4} sx={{ marginTop: "30px" }}>
@@ -52,7 +66,7 @@ const DealsListPage = () => {
           dealsInfo.results.map((deal, index) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
               <Box p={1}>
-                <Typography>{deal.name}</Typography>
+                <DealCard deal={deal} />
               </Box>
             </Grid>
           ))
@@ -68,7 +82,7 @@ const DealsListPage = () => {
               color: "black",
             }}
           >
-            {`There is No Services in this category yet.`}
+            {`There is No Deals in this category yet.`}
           </Typography>
         )}
       </Grid>

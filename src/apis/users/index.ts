@@ -10,14 +10,16 @@ const getUserByIdInfo = async (userId: string) => {
   return res.data;
 };
 
-const getAllUsersInfo = async () => {
-  const res = await publicInstance.get<UserModel[]>(API_ROUTES.USER.GET_ALL);
+const getAllUsersInfo = async (country: string) => {
+  const res = await publicInstance.get<UserModel[]>(
+    API_ROUTES.USER.GET_ALL(country)
+  );
   return res.data;
 };
 
-const getUsersByTypeInfo = async (userType: string) => {
+const getUsersByTypeInfo = async (userType: string, country: string) => {
   const res = await publicInstance.get<UserModel[]>(
-    API_ROUTES.USER.GET_BY_TYPE(userType)
+    API_ROUTES.USER.GET_BY_TYPE(userType, country)
   );
   return res.data;
 };

@@ -13,6 +13,7 @@ import { TransitionProps } from "@mui/material/transitions";
 
 import { DeleteProductDialogProps } from "./type";
 import { useDeleteProductMutation } from "../../../../apis/product/queries";
+import { useTranslation } from "react-i18next";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -27,6 +28,7 @@ const DeleteProductDialog = ({
   onClose,
   product,
 }: DeleteProductDialogProps) => {
+  const { t } = useTranslation();
   const { mutate: deleteProduct } = useDeleteProductMutation();
   const handleDeleteProduct = () => {
     deleteProduct(product.id);
@@ -35,12 +37,14 @@ const DeleteProductDialog = ({
   return (
     <Dialog open={open} onClose={onClose} TransitionComponent={Transition}>
       <DialogContent>
-        <DialogContentText>{`are you sure you want to delete ${product.name}`}</DialogContentText>
+        <DialogContentText>{`${t("are_you_sure_you_want_to_delete")} ${
+          product.name
+        }`}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>cancel</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
         <Button variant="contained" onClick={handleDeleteProduct}>
-          delete
+          {t("delete")}
         </Button>
       </DialogActions>
     </Dialog>

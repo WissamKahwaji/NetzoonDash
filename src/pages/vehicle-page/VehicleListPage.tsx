@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import {
   useGetAllCarsQuery,
   useGetAllPlansQuery,
+  useGetAllShipsQuery,
 } from "../../apis/vehicle/queries";
 import LoadingPage from "../loading-page/LoadingPage";
 import { Box, Button, Grid, MenuItem, Select, Typography } from "@mui/material";
@@ -9,30 +10,56 @@ import { useEffect, useState } from "react";
 import { VehicleModel, VehicleType } from "../../apis/vehicle/type";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import VehicleCard from "../../components/items/cards/vehicle_card/VehicleCard";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
 
 const VehicleListPage = () => {
+  const { country } = useCountry();
+  const { t } = useTranslation();
   const [filterType, setFilterType] = useState<VehicleType>(VehicleType.CARS);
   const [vehicleList, setVehicleList] = useState<VehicleModel[]>([]);
   const {
     data: carsInfo,
     isError: isErrorCars,
     isLoading: isLoadingCars,
-  } = useGetAllCarsQuery("AE", filterType === VehicleType.CARS);
+    refetch: refetchCars,
+  } = useGetAllCarsQuery(country, filterType === VehicleType.CARS);
   const {
     data: plansInfo,
     isError: isErrorPlans,
     isLoading: isLoadingPlans,
-  } = useGetAllPlansQuery("AE", filterType === VehicleType.PLANES);
+    refetch: refetchPlans,
+  } = useGetAllPlansQuery(country, filterType === VehicleType.PLANES);
+  const {
+    data: shipsInfo,
+    isError: isErrorShips,
+    isLoading: isLoadingShips,
+    refetch: refetchShips,
+  } = useGetAllShipsQuery(country, filterType === VehicleType.SHIPS);
   const navigate = useNavigate();
   useEffect(() => {
+    refetchCars();
+    refetchPlans();
+    refetchShips();
     if (carsInfo && filterType === VehicleType.CARS) {
       setVehicleList(carsInfo);
     } else if (plansInfo && filterType === VehicleType.PLANES) {
       setVehicleList(plansInfo);
+    } else if (shipsInfo && filterType === VehicleType.SHIPS) {
+      setVehicleList(shipsInfo);
     }
-  }, [carsInfo, filterType, plansInfo]);
-  if (isErrorCars || isErrorPlans) return <div>Error !!!</div>;
-  if (isLoadingCars || isLoadingPlans) return <LoadingPage />;
+  }, [
+    carsInfo,
+    filterType,
+    plansInfo,
+    refetchCars,
+    refetchPlans,
+    refetchShips,
+    shipsInfo,
+    country,
+  ]);
+  if (isErrorCars || isErrorPlans || isErrorShips) return <div>Error !!!</div>;
+  if (isLoadingCars || isLoadingPlans || isLoadingShips) return <LoadingPage />;
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -46,7 +73,7 @@ const VehicleListPage = () => {
           mb: 3,
         }}
       >
-        Vehicles
+        {t("vehicles")}
       </Typography>
       <Box
         sx={{
@@ -67,7 +94,7 @@ const VehicleListPage = () => {
             navigate(`owner`);
           }}
         >
-          Add Vehicle
+          {t("add")}
         </Button>
 
         <Box sx={{ marginRight: "8px", marginBottom: "10px" }}>
@@ -78,8 +105,9 @@ const VehicleListPage = () => {
             inputProps={{ "aria-label": "Select ads type" }}
             IconComponent={ExpandMoreIcon}
           >
-            <MenuItem value={VehicleType.CARS}>CARS</MenuItem>
-            <MenuItem value={VehicleType.PLANES}>PLANES</MenuItem>
+            <MenuItem value={VehicleType.CARS}>{t("car")}</MenuItem>
+            <MenuItem value={VehicleType.PLANES}>{t("planes")}</MenuItem>
+            <MenuItem value={VehicleType.SHIPS}>{t("ships")}</MenuItem>
           </Select>
         </Box>
       </Box>

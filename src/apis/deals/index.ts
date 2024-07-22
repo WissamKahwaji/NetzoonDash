@@ -46,6 +46,33 @@ const deleteDealCategory = async (id: string) => {
   return res.data;
 };
 
+const getDealById = async (id: string) => {
+  const res = await publicInstance.get<DealsItemModel>(
+    API_ROUTES.DEALS.GET_DEAL_BY_ID(id)
+  );
+  return res.data;
+};
+
+const addDeal = async (payload: DealsItemModel) => {
+  const data = createFormData(payload);
+  const res = await publicInstance.post(API_ROUTES.DEALS.ADD_DEAL, data);
+  return res.data;
+};
+
+const editDeal = async (payload: DealsItemModel) => {
+  const data = createFormData(payload);
+  const res = await publicInstance.put(
+    API_ROUTES.DEALS.EDIT_DEAL(payload._id!),
+    data
+  );
+  return res.data;
+};
+
+const deleteDeal = async (id: string) => {
+  const res = await publicInstance.delete(API_ROUTES.DEALS.DELETE_DEAL(id));
+  return res.data;
+};
+
 export {
   getDealsCategories,
   deleteDealCategory,
@@ -53,4 +80,8 @@ export {
   editDealCategory,
   getDealCategoryById,
   getDealsByCategory,
+  deleteDeal,
+  addDeal,
+  editDeal,
+  getDealById,
 };

@@ -12,7 +12,7 @@ import {
 import { UserModel } from "../../../../apis/users/type";
 import { Delete } from "@mui/icons-material";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import DeleteUserDialog from "../../dialogs/delete_user_dialog/DeleteUserDialog";
 
 interface UserCardProps {
@@ -22,7 +22,6 @@ interface UserCardProps {
 const UserCard = ({ user }: UserCardProps) => {
   const [openDeleteUserDialog, setOpenDeleteUserDialog] =
     useState<boolean>(false);
-  const navigate = useNavigate();
 
   const handleOpenDeleteUserDialog = () => {
     setOpenDeleteUserDialog(true);
@@ -34,34 +33,36 @@ const UserCard = ({ user }: UserCardProps) => {
     <Card>
       <CardHeader
         title={
-          <CardActionArea
-            onClick={() => navigate(`/users/edit-user/${user._id}`)}
-          >
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <CardMedia
-                component="img"
-                sx={{
-                  objectFit: "contain",
-                  width: 50,
-                  height: 50,
-                  borderRadius: "50%",
-                }}
-                crossOrigin="anonymous"
-                src={user.profilePhoto}
-                alt={`${user.username}'s profile photo`}
-              />
-              <Typography variant="h6">
-                {user.username.length > 60 ? (
-                  <>
-                    {user.username.slice(0, 60)}
-                    <Box component="span">...</Box>
-                  </>
-                ) : (
-                  user.username
-                )}
-              </Typography>
-            </Stack>
-          </CardActionArea>
+          <Link to={`/users/edit-user/${user._id}`} reloadDocument>
+            <CardActionArea
+            // onClick={() => navigate(`/users/edit-user/${user._id}`)}
+            >
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <CardMedia
+                  component="img"
+                  sx={{
+                    objectFit: "contain",
+                    width: 50,
+                    height: 50,
+                    borderRadius: "50%",
+                  }}
+                  crossOrigin="anonymous"
+                  src={user.profilePhoto}
+                  alt={`${user.username}'s profile photo`}
+                />
+                <Typography variant="h6">
+                  {user.username.length > 60 ? (
+                    <>
+                      {user.username.slice(0, 60)}
+                      <Box component="span">...</Box>
+                    </>
+                  ) : (
+                    user.username
+                  )}
+                </Typography>
+              </Stack>
+            </CardActionArea>
+          </Link>
         }
         action={
           <Box

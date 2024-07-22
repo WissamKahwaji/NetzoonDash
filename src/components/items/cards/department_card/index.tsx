@@ -7,12 +7,14 @@ import {
 } from "@mui/material";
 import { DepartmentModel } from "../../../../apis/departments/type";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface DepartmentCardProps {
   department: DepartmentModel;
 }
 
 const DepartmentCard = ({ department }: DepartmentCardProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   return (
     <Card>
@@ -26,7 +28,7 @@ const DepartmentCard = ({ department }: DepartmentCardProps) => {
                   <Box component={"span"}>...</Box>
                 </>
               ) : (
-                department.name
+                t(department.name)
               )}
             </Typography>
           }

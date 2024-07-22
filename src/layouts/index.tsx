@@ -8,7 +8,10 @@ import { FC, PropsWithChildren, useEffect } from "react";
 import SideBar from "./sidebar";
 import NavBar from "./navbar";
 import useToggleEle from "../hooks/useToggleEle";
+import { useTranslation } from "react-i18next";
 const Layout: FC<PropsWithChildren> = ({ children }) => {
+  const { i18n } = useTranslation();
+  const selectedLanguage = i18n.language;
   const theme = useTheme();
   const matchSmallScreen = useMediaQuery(theme.breakpoints.up("md"));
   const [open, handleDrawerOpen, handleDrawerClose, setOpenDrawer] =
@@ -18,7 +21,7 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
   }, [matchSmallScreen, setOpenDrawer]);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", direction: "ltr" }}>
       <NavBar open={open} handleDrawerOpen={handleDrawerOpen} />
       <SideBar open={open} handleDrawerClose={handleDrawerClose} />
       <Box
@@ -27,6 +30,7 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
           width: open ? "calc(100vw - 240px)" : "calc(100vw - 73px)",
           flexGrow: 1,
           p: 3,
+          direction: selectedLanguage === "en" ? "ltr" : "rtl",
         }}
       >
         <DrawerHeader />

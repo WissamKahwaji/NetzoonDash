@@ -12,6 +12,7 @@ import React from "react";
 import { TransitionProps } from "@mui/material/transitions";
 import { useDeleteServiceMutation } from "../../../../apis/services/queries";
 import { DeleteServiceDialogProps } from "./type";
+import { useTranslation } from "react-i18next";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -26,6 +27,7 @@ const DeleteServiceDialog = ({
   onClose,
   service,
 }: DeleteServiceDialogProps) => {
+  const { t } = useTranslation();
   const { mutate: deleteService } = useDeleteServiceMutation();
   const handleDeleteService = () => {
     deleteService(service.id);
@@ -34,12 +36,14 @@ const DeleteServiceDialog = ({
   return (
     <Dialog open={open} onClose={onClose} TransitionComponent={Transition}>
       <DialogContent>
-        <DialogContentText>{`are you sure you want to delete ${service.name}`}</DialogContentText>
+        <DialogContentText>{`${t("are_you_sure_you_want_to_delete")} ${
+          service.name
+        }`}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>cancel</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
         <Button variant="contained" onClick={handleDeleteService}>
-          delete
+          {t("delete")}
         </Button>
       </DialogActions>
     </Dialog>

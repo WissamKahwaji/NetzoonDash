@@ -73,4 +73,5 @@ export type UserModel = {
   contactName?: string;
   floorNum?: number;
   locationType?: "home" | "work";
+  title?: string;
 };

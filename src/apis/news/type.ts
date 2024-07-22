@@ -4,4 +4,5 @@ export type NewsModel = {
   description?: string;
   imgUrl?: string;
   creator?: string;
+  country?: string;
 };

@@ -43,4 +43,10 @@ export type VehicleModel = {
 export enum VehicleType {
   CARS = "cars",
   PLANES = "planes",
+  SHIPS = "sea_companies",
 }
+
+export type CarType = {
+  name: string;
+  categories: string[];
+};

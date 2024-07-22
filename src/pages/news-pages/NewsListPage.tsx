@@ -3,9 +3,24 @@ import { useGetNewsListQuery } from "../../apis/news/queries";
 import LoadingPage from "../loading-page/LoadingPage";
 import { useNavigate } from "react-router-dom";
 import NewsCard from "../../components/items/cards/news_card";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
+import { useEffect } from "react";
 
 const NewsListPage = () => {
-  const { data: newsInfo, isError, isLoading } = useGetNewsListQuery();
+  const { country } = useCountry();
+  const { t } = useTranslation();
+  const {
+    data: newsInfo,
+    isError,
+    isLoading,
+    refetch,
+  } = useGetNewsListQuery(country);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch, country]);
+
   const navigate = useNavigate();
 
   if (isError) return <div>Error !!!</div>;
@@ -22,7 +37,7 @@ const NewsListPage = () => {
           mb: 3,
         }}
       >
-        News
+        {t("news")}
       </Typography>
       <Box
         sx={{
@@ -43,7 +58,7 @@ const NewsListPage = () => {
             navigate(`owner`);
           }}
         >
-          Add News
+          {t("add_news")}
         </Button>
       </Box>
       <Grid container gap={4}>

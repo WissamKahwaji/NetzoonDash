@@ -4,16 +4,17 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { AdsInputModel } from "./type";
 
-const useGetAdsListQuery = () =>
+const useGetAdsListQuery = (country: string) =>
   useQuery({
     queryKey: ["get-ads-list"],
-    queryFn: () => getAdsList(),
+    queryFn: () => getAdsList(country),
   });
 
 const useGetAdsByIdQuery = (id: string) =>
   useQuery({
     queryKey: ["get-ads-by-id"],
     queryFn: () => getAdsById(id),
+    enabled: !!id,
   });
 const useAddAdsMutation = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const useAddAdsMutation = () => {
     mutationFn: (payload: AdsInputModel) => addAds(payload),
     onSuccess(_data, variable) {
       toast.success(`add ${variable.advertisingTitle} successfully.`);
-      navigate(-2);
+      navigate("/ads");
     },
     onError(_data, variable) {
       toast.error(`failed to add ${variable.advertisingTitle}`);

@@ -3,11 +3,13 @@ import { UserModel } from "../users/type";
 export type ServiceCategoryModel = {
   _id?: string;
   title: string;
+  titleAr?: string;
 };
 
 export type ServicesResponseModel = {
   _id: string;
   title: string;
+  titleAr?: string;
   services: ServiceModel[];
 };
 
@@ -30,6 +32,7 @@ export type ServiceInputModel = {
   _id?: string;
   title?: string | undefined;
   description?: string | undefined;
+  imageUrl?: string | undefined;
   price?: number | undefined;
   bio?: string | undefined;
   owner?: string | undefined;

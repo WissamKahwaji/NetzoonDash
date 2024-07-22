@@ -2,8 +2,10 @@ import { useGetAllDepartmentsQuery } from "../../apis/departments/queries";
 import LoadingPage from "../loading-page/LoadingPage";
 import { Box, Grid, Typography } from "@mui/material";
 import DepartmentCard from "../../components/items/cards/department_card";
+import { useTranslation } from "react-i18next";
 
 const DepartmentsPage = () => {
+  const { t } = useTranslation();
   const {
     data: departmentsInfo,
     isError,
@@ -25,7 +27,7 @@ const DepartmentsPage = () => {
           color: "black",
         }}
       >
-        All Departments
+        {t("all_departments")}
       </Typography>
       <Grid
         container

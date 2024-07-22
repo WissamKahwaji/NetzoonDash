@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useGetFactoriesCategoriesQuery } from "../../apis/departments/queries";
 import LoadingPage from "../loading-page/LoadingPage";
 import {
@@ -6,13 +7,13 @@ import {
   CardActionArea,
   CardHeader,
   Grid,
-  IconButton,
   Typography,
 } from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+// import { Delete, Edit } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 const FactoriesCategoriesListPage = () => {
+  const { t } = useTranslation();
   const {
     data: factoriesCategories,
     isError,
@@ -34,7 +35,7 @@ const FactoriesCategoriesListPage = () => {
           color: "black",
         }}
       >
-        Factories Categories
+        {t("factories_categories")}
       </Typography>
       <Grid container spacing={4}>
         {factoriesCategories &&
@@ -51,25 +52,25 @@ const FactoriesCategoriesListPage = () => {
                           );
                         }}
                       >
-                        <Typography>{category.title}</Typography>
+                        <Typography>{t(category.title)}</Typography>
                       </CardActionArea>
                     }
-                    action={
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                        }}
-                      >
-                        <IconButton color="primary">
-                          <Edit />
-                        </IconButton>
-                        <IconButton color="error">
-                          <Delete />
-                        </IconButton>
-                      </Box>
-                    }
+                    // action={
+                    //   <Box
+                    //     sx={{
+                    //       display: "flex",
+                    //       flexDirection: "row",
+                    //       alignItems: "center",
+                    //     }}
+                    //   >
+                    //     <IconButton color="primary">
+                    //       <Edit />
+                    //     </IconButton>
+                    //     <IconButton color="error">
+                    //       <Delete />
+                    //     </IconButton>
+                    //   </Box>
+                    // }
                   />
                 </Card>
               </Box>

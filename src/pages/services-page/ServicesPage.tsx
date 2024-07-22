@@ -2,10 +2,11 @@ import { Box, Button, Grid, Typography } from "@mui/material";
 import { useGetServicesCategoriesQuery } from "../../apis/services/queries";
 import LoadingPage from "../loading-page/LoadingPage";
 import ServicesCategoriesCard from "../../components/items/cards/services_categories_card";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ServicesPage = () => {
-  const navigate = useNavigate();
+  const { t } = useTranslation();
   const {
     data: servicesCategories,
     isError,
@@ -28,21 +29,23 @@ const ServicesPage = () => {
           color: "black",
         }}
       >
-        Services Categories
+        {t("services_categories")}
       </Typography>
       <Box sx={{ display: "flex", justifyContent: "end" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{
-            height: "fit-content",
-          }}
-          onClick={() => {
-            navigate(`add`);
-          }}
-        >
-          Add service category
-        </Button>
+        <Link to={`add`} reloadDocument>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              height: "fit-content",
+            }}
+            // onClick={() => {
+            //   navigate(`add`);
+            // }}
+          >
+            {t("add_service_category")}
+          </Button>
+        </Link>
       </Box>
       <Grid container gap={4}>
         {servicesCategories &&
@@ -53,6 +56,7 @@ const ServicesPage = () => {
                   key={index}
                   categoryId={category._id ?? ""}
                   name={category.title}
+                  nameAr={category.titleAr ?? category.title}
                 />
               </Box>
             </Grid>

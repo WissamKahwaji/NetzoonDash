@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router-dom";
 import {
   useAddVehicleMutation,
@@ -14,29 +15,37 @@ import {
   FormControlLabel,
   FormLabel,
   Grid,
+  InputLabel,
   MenuItem,
   Radio,
   RadioGroup,
   Select,
   Stack,
-  TextareaAutosize,
   TextField,
   Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LoadingButton from "../../components/items/buttons/loadingButtons/LoadingButton";
 import ImageDragDropField from "../../components/items/inputs/imageDragDropFeild";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { CAR_TYPES, SHIP_TYPES } from "../../constants";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
 
 const AddEditVehiclePage = () => {
+  const { country } = useCountry();
+  const { t } = useTranslation();
   const { id, ownerId } = useParams<{
     id: string;
     ownerId: string;
   }>();
-  const { data: vehicleInfo } = useGetVehicleByIdQuery(id ?? "");
+  const { data: vehicleInfo } = useGetVehicleByIdQuery(id!);
   const { mutate: addVehicle } = useAddVehicleMutation();
   const { mutate: editVehicle } = useEditVehicleMutation();
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
+  const [selectedCarName, setSelectedCarName] = useState<string>("");
+  const [selectedCarCategory, setSelectedCarCategory] = useState<string>("");
+  const [carCategories, setCarCategories] = useState<string[]>();
   const initialValues: VehicleModel = {
     ...(id && { _id: id }),
     ...(ownerId && { creator: ownerId }),
@@ -51,7 +60,9 @@ const AddEditVehiclePage = () => {
     contactNumber: vehicleInfo?.contactNumber ?? "",
     exteriorColor: vehicleInfo?.exteriorColor,
     interiorColor: vehicleInfo?.interiorColor,
-    doors: vehicleInfo?.doors,
+    ...(vehicleInfo?.doors && {
+      doors: vehicleInfo?.doors,
+    }),
     bodyCondition: vehicleInfo?.bodyCondition,
     bodyType: vehicleInfo?.bodyType,
     mechanicalCondition: vehicleInfo?.mechanicalCondition,
@@ -65,17 +76,24 @@ const AddEditVehiclePage = () => {
     extras: vehicleInfo?.extras,
     technicalFeatures: vehicleInfo?.technicalFeatures,
     steeringSide: vehicleInfo?.steeringSide,
-    guarantee: vehicleInfo?.guarantee,
-    forWhat: vehicleInfo?.forWhat,
-    regionalSpecs: vehicleInfo?.regionalSpecs,
+    guarantee: vehicleInfo?.guarantee ?? false,
+    forWhat: vehicleInfo?.forWhat ?? "",
+    regionalSpecs: vehicleInfo?.regionalSpecs ?? "",
     aircraftType: vehicleInfo?.aircraftType,
     manufacturer: vehicleInfo?.manufacturer,
     vehicleModel: vehicleInfo?.vehicleModel,
     maxSpeed: vehicleInfo?.maxSpeed,
     maxDistance: vehicleInfo?.maxDistance,
-    shipType: vehicleInfo?.shipType,
-    country: "AE",
+    shipType: vehicleInfo?.shipType ?? "",
+    shipLength: vehicleInfo?.shipLength ?? "",
+    country: country ?? "AE",
   };
+
+  useEffect(() => {
+    const carCat =
+      CAR_TYPES.find(car => car.name === selectedCarName)?.categories || [];
+    setCarCategories(carCat);
+  }, [selectedCarName]);
   const handleSubmit = (
     values: VehicleModel,
     { setSubmitting }: FormikHelpers<VehicleModel>
@@ -104,7 +122,7 @@ const AddEditVehiclePage = () => {
           mb: 3,
         }}
       >
-        {id ? `Edit ${vehicleInfo?.name}` : `Add New Vehicle`}
+        {id ? `${t("edit")} ${vehicleInfo?.name}` : `${t("add_new_vehicle")}`}
       </Typography>
       <Formik
         initialValues={initialValues}
@@ -131,7 +149,7 @@ const AddEditVehiclePage = () => {
                     alignItems: "center",
                   }}
                 >
-                  <Typography>Select Vehicle Type</Typography>
+                  <Typography>{t("select_vehicle_type")}</Typography>
                   <Select
                     value={values.category}
                     onChange={e =>
@@ -141,27 +159,155 @@ const AddEditVehiclePage = () => {
                     inputProps={{ "aria-label": "Select vehicle type" }}
                     IconComponent={ExpandMoreIcon}
                   >
-                    <MenuItem value={VehicleType.CARS}>CARS</MenuItem>
-                    <MenuItem value={VehicleType.PLANES}>PLANES</MenuItem>
+                    <MenuItem value={VehicleType.CARS}>{t("car")}</MenuItem>
+                    <MenuItem value={VehicleType.PLANES}>
+                      {t("planes")}
+                    </MenuItem>
+                    <MenuItem value={VehicleType.SHIPS}>{t("ships")}</MenuItem>
                   </Select>
                 </Box>
               </Grid>
+              {values.category === VehicleType.CARS && (
+                <Grid item xs={12} lg={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id="car-name-label">{t("car_name")}</InputLabel>
+                    <Select
+                      labelId="car-name-label"
+                      id="carName"
+                      name="carName"
+                      value={selectedCarName}
+                      onChange={event => {
+                        const carName = event.target.value as string;
+                        setSelectedCarName(carName);
+                        setSelectedCarCategory(""); // Reset category when car name changes
+
+                        setFieldValue(
+                          "name",
+                          `${carName} ${selectedCarCategory}`
+                        );
+                      }}
+                      label={t("car_name")}
+                    >
+                      {CAR_TYPES.map(car => (
+                        <MenuItem key={car.name} value={car.name}>
+                          {car.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {/* <FormHelperText>
+                   {formik.touched.carName && formik.errors.carName}
+                 </FormHelperText> */}
+                  </FormControl>
+                </Grid>
+              )}
+              {values.category === VehicleType.CARS && (
+                <Grid item xs={12} lg={6}>
+                  <FormControl
+                    fullWidth
+                    // error={
+                    //   formik.touched.carCategory &&
+                    //   Boolean(formik.errors.carCategory)
+                    // }
+                  >
+                    <InputLabel id="car-category-label">
+                      {t("car_category")}
+                    </InputLabel>
+                    <Select
+                      labelId="car-category-label"
+                      id="carCategory"
+                      name="carCategory"
+                      value={selectedCarCategory}
+                      onChange={event => {
+                        const carCategory = event.target.value as string;
+                        setSelectedCarCategory(carCategory);
+                        setFieldValue(
+                          "name",
+                          `${selectedCarName} ${carCategory}`
+                        );
+                      }}
+                      label={t("car_category")}
+                      disabled={!selectedCarName}
+                    >
+                      {carCategories &&
+                        carCategories.map(category => (
+                          <MenuItem key={category} value={category}>
+                            {category}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                    {/* <FormHelperText>
+                    {formik.touched.carCategory && formik.errors.carCategory}
+                  </FormHelperText> */}
+                  </FormControl>
+                </Grid>
+              )}
+              {values.category !== VehicleType.CARS && (
+                <Grid item xs={12} lg={6}>
+                  <TextField
+                    fullWidth
+                    id="name"
+                    name="name"
+                    label={t("name")}
+                    type="text"
+                    value={values.name}
+                    onChange={handleChange}
+                    error={touched.name && Boolean(errors.name)}
+                    helperText={touched.name && errors.name}
+                    sx={{ mb: 2 }}
+                  />
+                </Grid>
+              )}
+              {values.category === VehicleType.SHIPS && (
+                <Grid item xs={12} lg={6}>
+                  <FormControl
+                    fullWidth
+                    // error={
+                    //   formik.touched.carCategory &&
+                    //   Boolean(formik.errors.carCategory)
+                    // }
+                  >
+                    <InputLabel id="car-category-label">
+                      {t("ship_type")}
+                    </InputLabel>
+                    <Select
+                      labelId="shipType-label"
+                      id="shipType"
+                      name="shipType"
+                      value={values.shipType}
+                      onChange={event => {
+                        const shipType = event.target.value as string;
+
+                        setFieldValue("shipType", shipType);
+                      }}
+                      label={t("ship_type")}
+                    >
+                      {SHIP_TYPES.map(category => (
+                        <MenuItem key={category} value={category}>
+                          {category}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {/* <FormHelperText>
+                  {formik.touched.carCategory && formik.errors.carCategory}
+                </FormHelperText> */}
+                  </FormControl>
+                </Grid>
+              )}
               <Grid item xs={12} lg={6}>
                 <TextField
                   fullWidth
-                  id="name"
-                  name="name"
-                  label="name"
-                  type="text"
-                  value={values.name}
+                  id="description"
+                  name="description"
+                  label={t("description")}
+                  multiline
+                  minRows={1}
+                  value={values.description}
                   onChange={handleChange}
-                  error={touched.name && Boolean(errors.name)}
-                  helperText={touched.name && errors.name}
+                  error={touched.description && Boolean(errors.description)}
+                  helperText={touched.description && errors.description}
                   sx={{ mb: 2 }}
                 />
-              </Grid>
-              <Grid item xs={12} lg={6}>
-                <TextareaAutosize
+                {/* <TextareaAutosize
                   id="description"
                   title="description"
                   name="description"
@@ -177,14 +323,14 @@ const AddEditVehiclePage = () => {
                     borderRadius: 3,
                     width: "100%",
                   }}
-                />
+                /> */}
               </Grid>
               <Grid item xs={12} lg={6}>
                 <TextField
                   fullWidth
                   id="price"
                   name="price"
-                  label="price"
+                  label={t("price")}
                   type="number"
                   value={values.price}
                   onChange={handleChange}
@@ -198,13 +344,13 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="contactNumber"
                   name="contactNumber"
-                  label="contact Number"
+                  label={t("contact_number")}
                   type="tel"
                   value={values.contactNumber}
                   onChange={handleChange}
                   error={touched.contactNumber && Boolean(errors.contactNumber)}
                   helperText={touched.contactNumber && errors.contactNumber}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, direction: "ltr" }}
                 />
               </Grid>
 
@@ -214,7 +360,7 @@ const AddEditVehiclePage = () => {
                     fullWidth
                     id="kilometers"
                     name="kilometers"
-                    label="kilometers"
+                    label={t("kilometers")}
                     type="number"
                     value={values.kilometers}
                     onChange={handleChange}
@@ -224,13 +370,29 @@ const AddEditVehiclePage = () => {
                   />
                 </Grid>
               )}
-              {values.category === VehicleType.PLANES && (
+              {values.category === VehicleType.SHIPS && (
+                <Grid item xs={12} lg={6}>
+                  <TextField
+                    fullWidth
+                    id="shipLength"
+                    name="shipLength"
+                    label={t("ship_length")}
+                    type="text"
+                    value={values.shipLength}
+                    onChange={handleChange}
+                    error={touched.shipLength && Boolean(errors.shipLength)}
+                    helperText={touched.shipLength && errors.shipLength}
+                    sx={{ mb: 2 }}
+                  />
+                </Grid>
+              )}
+              {values.category !== VehicleType.CARS && (
                 <Grid item xs={12} lg={6}>
                   <TextField
                     fullWidth
                     id="vehicleModel"
                     name="vehicleModel"
-                    label="vehicle Model"
+                    label={t("vehicle_model")}
                     type="text"
                     value={values.vehicleModel}
                     onChange={handleChange}
@@ -240,13 +402,13 @@ const AddEditVehiclePage = () => {
                   />
                 </Grid>
               )}
-              {values.category === VehicleType.PLANES && (
+              {values.category !== VehicleType.CARS && (
                 <Grid item xs={12} lg={6}>
                   <TextField
                     fullWidth
                     id="manufacturer"
                     name="manufacturer"
-                    label="manufacturer"
+                    label={t("manufacturer")}
                     type="text"
                     value={values.manufacturer}
                     onChange={handleChange}
@@ -261,7 +423,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="year"
                   name="year"
-                  label="Year"
+                  label={t("year")}
                   type="date"
                   value={values.year}
                   onChange={handleChange}
@@ -275,7 +437,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="location"
                   name="location"
-                  label="address"
+                  label={t("address")}
                   type="text"
                   value={values.location}
                   onChange={handleChange}
@@ -289,7 +451,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="maxSpeed"
                   name="maxSpeed"
-                  label="maxSpeed"
+                  label={t("maxSpeed")}
                   type="text"
                   value={values.maxSpeed}
                   onChange={handleChange}
@@ -303,7 +465,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="exteriorColor"
                   name="exteriorColor"
-                  label="exterior Color"
+                  label={t("exterior_color")}
                   type="text"
                   value={values.exteriorColor}
                   onChange={handleChange}
@@ -317,7 +479,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="interiorColor"
                   name="interiorColor"
-                  label="interior Color"
+                  label={t("interior_color")}
                   type="text"
                   value={values.interiorColor}
                   onChange={handleChange}
@@ -331,7 +493,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="doors"
                   name="doors"
-                  label="doors"
+                  label={t("doors")}
                   type="number"
                   value={values.doors}
                   onChange={handleChange}
@@ -345,7 +507,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="bodyCondition"
                   name="bodyCondition"
-                  label="body Condition"
+                  label={t("body_condition")}
                   type="text"
                   value={values.bodyCondition}
                   onChange={handleChange}
@@ -359,7 +521,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="bodyType"
                   name="bodyType"
-                  label="body Type"
+                  label={t("body_type")}
                   type="text"
                   value={values.bodyType}
                   onChange={handleChange}
@@ -373,7 +535,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="mechanicalCondition"
                   name="mechanicalCondition"
-                  label="mechanical Condition"
+                  label={t("mechanical_condition")}
                   type="text"
                   value={values.mechanicalCondition}
                   onChange={handleChange}
@@ -392,7 +554,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="seatingCapacity"
                   name="seatingCapacity"
-                  label="seating Capacity"
+                  label={t("seating_capacity")}
                   type="number"
                   value={values.seatingCapacity}
                   onChange={handleChange}
@@ -409,7 +571,7 @@ const AddEditVehiclePage = () => {
                     fullWidth
                     id="numofCylinders"
                     name="numofCylinders"
-                    label="num of Cylinders"
+                    label={t("num_of_cylinders")}
                     type="number"
                     value={values.numofCylinders}
                     onChange={handleChange}
@@ -427,7 +589,7 @@ const AddEditVehiclePage = () => {
                     fullWidth
                     id="transmissionType"
                     name="transmissionType"
-                    label="transmission Type"
+                    label={t("transmission_type")}
                     type="text"
                     value={values.transmissionType}
                     onChange={handleChange}
@@ -447,7 +609,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="horsepower"
                   name="horsepower"
-                  label="horse power"
+                  label={t("horse_power")}
                   type="text"
                   value={values.horsepower}
                   onChange={handleChange}
@@ -461,7 +623,7 @@ const AddEditVehiclePage = () => {
                   fullWidth
                   id="fuelType"
                   name="fuelType"
-                  label="fuel Type"
+                  label={t("fuel_type")}
                   type="text"
                   value={values.fuelType}
                   onChange={handleChange}
@@ -476,7 +638,7 @@ const AddEditVehiclePage = () => {
                     fullWidth
                     id="extras"
                     name="extras"
-                    label="extras"
+                    label={t("extras")}
                     type="text"
                     value={values.extras}
                     onChange={handleChange}
@@ -492,7 +654,7 @@ const AddEditVehiclePage = () => {
                     fullWidth
                     id="technicalFeatures"
                     name="technicalFeatures"
-                    label="technical Features"
+                    label={t("technical_features")}
                     type="text"
                     value={values.technicalFeatures}
                     onChange={handleChange}
@@ -513,7 +675,7 @@ const AddEditVehiclePage = () => {
                     fullWidth
                     id="steeringSide"
                     name="steeringSide"
-                    label="steering Side"
+                    label={t("steering_side")}
                     type="text"
                     value={values.steeringSide}
                     onChange={handleChange}
@@ -527,7 +689,7 @@ const AddEditVehiclePage = () => {
                 <Grid item xs={12} lg={6}>
                   <FormControl>
                     <FormLabel id="regionalSpecs-label">
-                      regional Specs
+                      {t("regional_specs")}
                     </FormLabel>
                     <RadioGroup
                       id="regionalSpecs"
@@ -544,7 +706,7 @@ const AddEditVehiclePage = () => {
                         <FormControlLabel
                           key={option}
                           control={<Radio />}
-                          label={option}
+                          label={t(option)}
                           value={option}
                         />
                       ))}
@@ -554,7 +716,7 @@ const AddEditVehiclePage = () => {
               )}
               <Grid item xs={12} lg={6}>
                 <FormControl>
-                  <FormLabel id="type-label">Condition</FormLabel>
+                  <FormLabel id="type-label">{t("condition")}</FormLabel>
                   <RadioGroup
                     id="type"
                     aria-labelledby="type-label"
@@ -568,7 +730,7 @@ const AddEditVehiclePage = () => {
                       <FormControlLabel
                         key={option}
                         control={<Radio />}
-                        label={option}
+                        label={t(option)}
                         value={option}
                       />
                     ))}
@@ -577,7 +739,7 @@ const AddEditVehiclePage = () => {
               </Grid>
               <Grid item xs={12} lg={6}>
                 <FormControl>
-                  <FormLabel id="forWhat-label">For What</FormLabel>
+                  <FormLabel id="forWhat-label">{t("for_what")}</FormLabel>
                   <RadioGroup
                     id="forWhat"
                     aria-labelledby="forWhat-label"
@@ -591,7 +753,7 @@ const AddEditVehiclePage = () => {
                       <FormControlLabel
                         key={option}
                         control={<Radio />}
-                        label={option}
+                        label={t(option)}
                         value={option}
                       />
                     ))}
@@ -602,6 +764,7 @@ const AddEditVehiclePage = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      value={values.guarantee}
                       checked={values.guarantee}
                       onChange={e =>
                         setFieldValue("guarantee", e.target.checked)
@@ -610,19 +773,19 @@ const AddEditVehiclePage = () => {
                       color="primary"
                     />
                   }
-                  label="Is there guarantee?"
+                  label={t("is_there_guarantee")}
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
                 <ImageDragDropField
                   name="image"
-                  label="Ads Image"
+                  label={t("vehicle_image")}
                   oldImg={vehicleInfo?.imageUrl}
                 />
               </Grid>
               <Grid item xs={12}>
                 <Button variant="contained" component="label">
-                  Upload Vehicle Images
+                  {t("upload_vehicle_images")}
                   <input
                     type="file"
                     accept="image/*"
@@ -646,7 +809,7 @@ const AddEditVehiclePage = () => {
               </Grid>
               <Grid item xs={12}>
                 <Button variant="contained" component="label">
-                  Upload Vehicle Video
+                  {t("upload_vehicle_video")}
                   <input
                     type="file"
                     accept="video/*"
@@ -671,7 +834,7 @@ const AddEditVehiclePage = () => {
                 <Stack justifyContent={"center"}>
                   <LoadingButton
                     isSubmitting={isSubmitting}
-                    buttonText={id ? "Edit Vehicle" : "Add Vehicle"}
+                    buttonText={t("save")}
                   />
                 </Stack>
               </Grid>

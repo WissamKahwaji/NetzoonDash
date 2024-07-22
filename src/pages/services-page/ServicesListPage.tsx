@@ -3,17 +3,26 @@ import { useGetServicesByCategoryQuery } from "../../apis/services/queries";
 import LoadingPage from "../loading-page/LoadingPage";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import ServiceCard from "../../components/items/cards/service_card";
+import { useTranslation } from "react-i18next";
+import { useCountry } from "../../context/CountryContext";
+import { useEffect } from "react";
 
 const ServicesListPage = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
+  const { t } = useTranslation();
+  const { country } = useCountry();
+
   const {
     data: servicesInfo,
     isError,
     isLoading,
-  } = useGetServicesByCategoryQuery(categoryId ?? "", "AE");
+    refetch,
+  } = useGetServicesByCategoryQuery(categoryId ?? "", country);
 
   const navigate = useNavigate();
-
+  useEffect(() => {
+    refetch();
+  }, [country, refetch]);
   if (isError) return <div>Error !!!</div>;
   if (isLoading) return <LoadingPage />;
 
@@ -43,7 +52,7 @@ const ServicesListPage = () => {
             navigate(`owner`);
           }}
         >
-          Add service in {servicesInfo?.title}
+          {t("add_service_in")} {servicesInfo?.title}
         </Button>
       </Box>
       <Grid container gap={4} sx={{ marginTop: "30px" }}>

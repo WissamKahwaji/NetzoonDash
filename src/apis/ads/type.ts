@@ -19,6 +19,8 @@ export type AdsModel = {
   advertisingPrice?: number;
   advertisingType?: string;
   forPurchase?: boolean;
+  country?: string;
+  cost?: number;
 };
 
 export type AdsInputModel = {
@@ -40,6 +42,7 @@ export type AdsInputModel = {
   advertisingType?: string;
   forPurchase?: boolean;
   advertisingImageList?: File[];
+  country?: string;
 };
 
 export enum advertisingType {
