@@ -112,12 +112,6 @@ const OrderListPage = () => {
     },
 
     {
-      header: `${t("shipping_address")}`,
-      accessorKey: "shippingAddress",
-      Cell: ({ cell }) => cell.getValue<string>(),
-      enableGrouping: false,
-    },
-    {
       header: `${t("seller_ammount")}`,
       accessorKey: "subTotal",
       filterFn: "between",
@@ -373,6 +367,12 @@ const OrderListPage = () => {
           </Box>
         </Stack>
       ),
+      enableGrouping: false,
+    },
+    {
+      header: `${t("shipping_address")}`,
+      accessorKey: "shippingAddress",
+      Cell: ({ cell }) => cell.getValue<string>(),
       enableGrouping: false,
     },
 
