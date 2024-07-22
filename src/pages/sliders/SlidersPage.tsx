@@ -44,49 +44,6 @@ const SlidersPage = () => {
         {t("main_slider")}
       </Typography>
 
-      {sliderInfo && sliderInfo.mainSlider.length > 1 ? (
-        <>
-          <Slider {...sliderSettings}>
-            {sliderInfo.mainSlider.map((image, index) => (
-              <Box key={index} sx={{ textAlign: "center" }}>
-                <img
-                  src={image}
-                  alt={`Main Slider Image ${index}`}
-                  style={{
-                    width: "100%",
-                    height: "300px",
-                    objectFit: "contain",
-                  }}
-                  crossOrigin="anonymous"
-                />
-              </Box>
-            ))}
-          </Slider>
-        </>
-      ) : (
-        <>
-          {sliderInfo && sliderInfo.mainSlider.length > 0 && (
-            <Box sx={{ textAlign: "center" }}>
-              <img
-                src={sliderInfo?.mainSlider[0]}
-                alt={`Main Slider Image`}
-                style={{
-                  width: "100%",
-                  height: "300px",
-                  objectFit: "contain",
-                }}
-                crossOrigin="anonymous"
-              />
-            </Box>
-          )}
-        </>
-      )}
-      <Typography
-        variant="h4"
-        sx={{ textAlign: "center", marginTop: "40px", marginBottom: "20px" }}
-      >
-        {t("second_slider")}
-      </Typography>
       {sliderInfo && sliderInfo.secondSlider.length > 1 ? (
         <>
           <Slider {...sliderSettings}>
@@ -124,6 +81,49 @@ const SlidersPage = () => {
             </Box>
           </>
         )
+      )}
+      <Typography
+        variant="h4"
+        sx={{ textAlign: "center", marginTop: "40px", marginBottom: "20px" }}
+      >
+        {t("second_slider")}
+      </Typography>
+      {sliderInfo && sliderInfo.mainSlider.length > 1 ? (
+        <>
+          <Slider {...sliderSettings}>
+            {sliderInfo.mainSlider.map((image, index) => (
+              <Box key={index} sx={{ textAlign: "center" }}>
+                <img
+                  src={image}
+                  alt={`Main Slider Image ${index}`}
+                  style={{
+                    width: "100%",
+                    height: "300px",
+                    objectFit: "contain",
+                  }}
+                  crossOrigin="anonymous"
+                />
+              </Box>
+            ))}
+          </Slider>
+        </>
+      ) : (
+        <>
+          {sliderInfo && sliderInfo.mainSlider.length > 0 && (
+            <Box sx={{ textAlign: "center" }}>
+              <img
+                src={sliderInfo?.mainSlider[0]}
+                alt={`Main Slider Image`}
+                style={{
+                  width: "100%",
+                  height: "300px",
+                  objectFit: "contain",
+                }}
+                crossOrigin="anonymous"
+              />
+            </Box>
+          )}
+        </>
       )}
     </Box>
   );

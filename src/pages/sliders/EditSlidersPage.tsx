@@ -149,6 +149,87 @@ const EditSlidersPage = () => {
                     {t("main_slider")}{" "}
                     <span
                       style={{ fontSize: "12px" }}
+                    >{`(size should be "W: 1440px * H: 300px")`}</span>
+                  </Typography>
+                  <Grid container spacing={2}>
+                    {values.secondSlider &&
+                      values.secondSlider.map((image, index) => (
+                        <Grid item xs={12} sm={6} md={4} key={index}>
+                          <Box sx={{ position: "relative" }}>
+                            <img
+                              src={image}
+                              alt={`Second Slider ${index}`}
+                              style={{ width: "100%", height: "auto" }}
+                              crossOrigin="anonymous"
+                            />
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              onClick={() => {
+                                remove(index);
+                                setFieldValue("removeSecondSliderImages", [
+                                  ...values.removeSecondSliderImages,
+                                  image,
+                                ]);
+                              }}
+                            >
+                              {t("remove")}
+                            </Button>
+                          </Box>
+                        </Grid>
+                      ))}
+                    <Grid item xs={12}>
+                      <Button variant="contained" component="label">
+                        {t("add_main_slider_images")}
+                        {/* <input
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          hidden
+                          onChange={event => {
+                            const files = event.target.files;
+                            if (files) {
+                              const fileArray = Array.from(files).map(file =>
+                                URL.createObjectURL(file)
+                              );
+                              fileArray.forEach(url => push(url));
+                              setFieldValue(
+                                "secondSliderImg",
+                                Array.from(files)
+                              );
+                            }
+                          }}
+                        /> */}
+                        <input
+                          type="file"
+                          accept="image/png, image/jpeg image/jpg"
+                          className="absolute w-full h-full opacity-0 cursor-pointer"
+                          multiple
+                          hidden
+                          onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
+                          ) => {
+                            handleChoosenSecondImages(
+                              event,
+                              setFieldValue,
+                              push
+                            );
+                          }}
+                        />
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </>
+              )}
+            </FieldArray>
+
+            <FieldArray name="secondSlider">
+              {({ push, remove }) => (
+                <>
+                  <Typography variant="h6" sx={{ marginTop: "20px" }}>
+                    {t("second_slider")}{" "}
+                    <span
+                      style={{ fontSize: "12px" }}
                     >{`(size should be "W: 1200px * H: 600px")`}</span>
                   </Typography>
                   <Grid container spacing={2}>
@@ -187,7 +268,7 @@ const EditSlidersPage = () => {
                       ))}
                     <Grid item xs={12}>
                       <Button variant="contained" component="label">
-                        {t("add_main_slider_images")}
+                        {t("add_second_slider_images")}
                         {/* <input
                           type="file"
                           multiple
@@ -214,87 +295,6 @@ const EditSlidersPage = () => {
                             event: React.ChangeEvent<HTMLInputElement>
                           ) => {
                             handleChoosenMainImages(event, setFieldValue, push);
-                          }}
-                        />
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </>
-              )}
-            </FieldArray>
-
-            <FieldArray name="secondSlider">
-              {({ push, remove }) => (
-                <>
-                  <Typography variant="h6" sx={{ marginTop: "20px" }}>
-                    {t("second_slider")}{" "}
-                    <span
-                      style={{ fontSize: "12px" }}
-                    >{`(size should be "W: 1440px * H: 300px")`}</span>
-                  </Typography>
-                  <Grid container spacing={2}>
-                    {values.secondSlider &&
-                      values.secondSlider.map((image, index) => (
-                        <Grid item xs={12} sm={6} md={4} key={index}>
-                          <Box sx={{ position: "relative" }}>
-                            <img
-                              src={image}
-                              alt={`Second Slider ${index}`}
-                              style={{ width: "100%", height: "auto" }}
-                              crossOrigin="anonymous"
-                            />
-                            <Button
-                              variant="outlined"
-                              color="error"
-                              onClick={() => {
-                                remove(index);
-                                setFieldValue("removeSecondSliderImages", [
-                                  ...values.removeSecondSliderImages,
-                                  image,
-                                ]);
-                              }}
-                            >
-                              {t("remove")}
-                            </Button>
-                          </Box>
-                        </Grid>
-                      ))}
-                    <Grid item xs={12}>
-                      <Button variant="contained" component="label">
-                        {t("add_second_slider_images")}
-                        {/* <input
-                          type="file"
-                          multiple
-                          accept="image/*"
-                          hidden
-                          onChange={event => {
-                            const files = event.target.files;
-                            if (files) {
-                              const fileArray = Array.from(files).map(file =>
-                                URL.createObjectURL(file)
-                              );
-                              fileArray.forEach(url => push(url));
-                              setFieldValue(
-                                "secondSliderImg",
-                                Array.from(files)
-                              );
-                            }
-                          }}
-                        /> */}
-                        <input
-                          type="file"
-                          accept="image/png, image/jpeg image/jpg"
-                          className="absolute w-full h-full opacity-0 cursor-pointer"
-                          multiple
-                          hidden
-                          onChange={(
-                            event: React.ChangeEvent<HTMLInputElement>
-                          ) => {
-                            handleChoosenSecondImages(
-                              event,
-                              setFieldValue,
-                              push
-                            );
                           }}
                         />
                       </Button>

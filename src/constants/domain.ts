@@ -1,4 +1,4 @@
-const baseURL = "https://netzoondev.siidevelopment.com";
+const baseURL = "https://www.netzoonback.siidevelopment.com";
 
 // "http://localhost:5000";
 // "https://netzoondev.siidevelopment.com/"

@@ -13,7 +13,10 @@ const OrderLoginPage = ({ onLogin }: OrderLoginPageProps) => {
   const [error, setError] = useState("");
 
   const handleLogin = () => {
-    if (username === "NetAccountant" && password === "@!NetzoonAcc@") {
+    if (
+      username === "Netzoon_Accountant" &&
+      password === "Netzoon_Acc@4725!%"
+    ) {
       localStorage.setItem("isOrderAuth", "true");
       onLogin(true);
     } else {
